@@ -5,17 +5,19 @@
                 <div class="col-md-4">
                     <img src="assets/img/logo.png" width="150px" class="" />
                     <h1>Login</h1>
-                    <form role="form">
+                    <form #loginForm="ngForm" (ngSubmit)="loginForm.valid && onLoggedin(login,password_Value)">
                         <div class="form-content">
                             <div class="form-group">
-                                <input type="text" ng-model="name" class="form-control input-underline input-lg" id="username" placeholder="Email">
+                                <input type="text" [(ngModel)]="login" required name="login" class="form-control input-underline input-lg" id="username"
+                                    placeholder="Email">
                             </div>
 
                             <div class="form-group">
-                                <input type="password" class="form-control input-underline input-lg" id="psw" placeholder="Password">
+                                <input type="password" name="password" required [(ngModel)]="password_Value" class="form-control input-underline input-lg"
+                                    id="psw" placeholder="Password">
                             </div>
                         </div>
-                        <a class="btn rounded-btn" [routerLink]="['/dashboard']" (click)="onLoggedin()"> Log in </a>
+                        <button type="submit" class="btn rounded-btn"> Log in </button>
                         &nbsp;
                         <a class="btn rounded-btn" [routerLink]="['/signup']">Register</a>
                     </form>
@@ -23,5 +25,19 @@
             </div>
         </div>
     </div>
-    
+    <ul class="bg-bubbles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
 </div>
