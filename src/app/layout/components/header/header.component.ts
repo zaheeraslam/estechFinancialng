@@ -96,6 +96,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     changeLang(language: string) {
         this.translate.use(language);
     }
+    
     // my code
     ngAfterViewInit() {
         this.displayName = sessionStorage.getItem("login");
@@ -184,7 +185,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
                 }
                 else {
                     this.URL = "" + this.reportURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";
-                    this.router.navigate(['/dashboard/redirect'], { queryParams: { pageId: this.pageID, cset: this.criteriaSet, name: this.page_Name, authKey: this.AuthKey } });
+                   alert("navigate");
+                    this.router.navigate(['/reports'], { queryParams: { pageId: this.pageID, cset: this.criteriaSet, name: this.page_Name, authKey: this.AuthKey } });
                 }
             });
     }

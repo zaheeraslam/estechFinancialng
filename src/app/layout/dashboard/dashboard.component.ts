@@ -1,3 +1,4 @@
+import { Color } from 'ng2-charts/charts';
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 
@@ -58,4 +59,7 @@ export class DashboardComponent implements OnInit {
         const index: number = this.alerts.indexOf(alert);
         this.alerts.splice(index, 1);
     }
+  
+         
+    
 }
