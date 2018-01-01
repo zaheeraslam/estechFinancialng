@@ -1,4 +1,4 @@
-import { Color } from 'ng2-charts/charts';
+
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 

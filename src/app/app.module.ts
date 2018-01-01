@@ -13,6 +13,7 @@ import { AppComponent } from './app.component';
 import { AuthGuard } from './shared';
 import { HeaderService } from './layout/components/header/header.service';
 import { LoginService } from './login/login.service';
+import { ReportService } from './layout/reports/reports/service/report.service';
 
 // AoT requires an exported function for factories
 export function createTranslateLoader(http: HttpClient) {
@@ -39,7 +40,7 @@ export function createTranslateLoader(http: HttpClient) {
         AppRoutingModule
     ],
     declarations: [AppComponent],
-    providers: [AuthGuard, HeaderService, LoginService],
+    providers: [AuthGuard, HeaderService, LoginService, ReportService],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

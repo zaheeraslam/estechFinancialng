@@ -90,7 +90,13 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
 
     onLoggedout() {
+        alert("navigate");
         localStorage.removeItem('isLoggedin');
+        this.router.navigate(['/login']);
+    }
+    onReports() {
+        alert("navigate");
+        this.router.navigate(['/reports']);
     }
 
     changeLang(language: string) {
@@ -151,6 +157,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         return newArr;
     }
     getPageDetail(page_ID) {
+       // this.onReports();
+       // alert("navigate");
+       // this.router.navigate(['/login']);
         this.service.getPageDetail(page_ID)
             .subscribe(response => {
                 this.detail = (response.json());
@@ -185,9 +194,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
                 }
                 else {
                     this.URL = "" + this.reportURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";
-                   alert("navigate");
+                   
                     this.router.navigate(['/reports'], { queryParams: { pageId: this.pageID, cset: this.criteriaSet, name: this.page_Name, authKey: this.AuthKey } });
                 }
-            });
+            }); 
     }
 }
