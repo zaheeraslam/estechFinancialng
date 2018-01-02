@@ -1,6 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
+import { CardService } from '../../shared';
 
 @Component({
     selector: 'app-dashboard',
@@ -11,8 +12,17 @@ import { routerTransition } from '../../router.animations';
 export class DashboardComponent implements OnInit {
     public alerts: Array<any> = [];
     public sliders: Array<any> = [];
-
-    constructor() {
+    logedInUserID : any;
+    cardType: any = 1;
+    cards:any [];
+    constructor(private service: CardService) {
+         this.logedInUserID = sessionStorage.getItem('user_ID');
+         //alert(this.logedInUserID);
+        this.service.getCards(this.logedInUserID,this.cardType)
+         .subscribe(res => {
+           this.cards = res.json();
+           console.log(res.json());
+        });
         this.sliders.push(
             {
                 imagePath: 'assets/images/slider1.jpg',

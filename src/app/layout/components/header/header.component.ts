@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { HeaderService } from './header.service';
-import { LoginService } from '../../../login/login.service';
+import { HeaderService, LoginService } from '../../../shared';
+
 
 @Component({
     selector: 'app-header',

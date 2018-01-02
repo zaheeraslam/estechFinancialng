@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { routerTransition } from '../router.animations';
 import { User } from '../shared/Model/User';
-import { LoginService } from './login.service';
+
 import { UUID } from 'angular2-uuid';
+import { LoginService } from '../shared';
 
 @Component({
     selector: 'app-login',

@@ -2,8 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 
 import { DomSanitizer } from "@angular/platform-browser";
 import { Router, ActivatedRoute } from "@angular/router";
-import { ReportService } from './service/report.service';
-import { LoginService } from '../../../login/login.service';
+import { ReportService, LoginService } from '../../../shared';
 
 
 @Component({
