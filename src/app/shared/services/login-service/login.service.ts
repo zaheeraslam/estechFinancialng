@@ -10,7 +10,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { User } from '../../Model/User';
+import { User } from '../../../shared';
+
 
 // <reference path="./myClass/index.d.ts" />
 //   import path from "./../../pathURL";

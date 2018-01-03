@@ -1,0 +1,331 @@
+
+
+<div class="card mb-3">
+  <div class="card-header">
+    <span>Purchase order</span>
+    <button (click)="open(content)">
+      <i class="fa fa-plus"></i>
+    </button>
+  </div>
+  <div class="card-body table-responsive">
+    <table class="table table-hover table-striped">
+      <thead >
+        <tr>
+          <th>ID</th>
+          <th>Order No</th>
+          <th>Supplier Name</th>
+          <th>Order Date</th>
+          <th>Total Cost</th>
+          <th>Total Discount</th>
+          <th>Total Amount</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dt of order">
+          <td>{{dt.purchase_Order_ID}}</td>
+          <td>{{dt.pO_NO}}</td>
+          <td>{{dt.supplier_Name}}</td>
+          <td>{{dt.pO_Date | date:"dd/MM/yy"}} </td>
+          <td>{{dt.total_Cost}}</td>
+          <td>{{dt.total_Discount}}</td>
+          <td>{{dt.total_Amount}}</td>
+          <td>
+            <div class="btn-group">
+              <a class="btn btn-small btn-warning tip" href="#pnlAdd" data-toggle="modal" (click)="getDetailsByID(dt.purchase_Order_ID)"
+                id="edit">
+                <span class="fa fa-pencil text-white"></span>
+              </a>
+              <button class="btn btn-small btn-danger tip" data-original-title="Remove" type="button" value="Delete" (click)="getDetailsByID(dt.purchase_Order_ID)"
+                id="remove">
+                <span class="fa fa-trash"></span>
+              </button>
+            </div>
+          </td>
+    
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template  #content let-c="close" let-d="dismiss">
+  <div style="left:-70%;width:1100px">
+    <div class="modal-header">
+        <h4 class="modal-title">Purchase Order Detail</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+           
+            <div class="row">
+              <div class="span2">Date:</div>
+              <div class="span2"> <input type="date" [(ngModel)]="pO_Date" id="pO_Date" style="width: 90%;height: 13px;"></div>
+              <div class="span2">Due Date:</div>
+              <div class="span2"><input type="date" [(ngModel)]="delivery_Date" id="Due_Date" style="width: 90%;height: 13px;" /></div>
+              <div class="span2">Purchase Officer:</div>
+              <div class="span2">
+                <select class="form-control" [(ngModel)]="order_Envoy" id="order_Envoy" >
+                  <option *ngFor="let u of users" [value]="u.order_Envoy">{{u.emp_Name}}</option>
+                </select>
+              </div>
+             
+            </div>
+            <div class="row">
+              <div class="span2">Supplier:</div>
+              <div class="span6">
+                <select [(ngModel)]="supplier_ID" (change)="changeSupplier(supplier_ID)" class="s2_2" id="supplier_ID" style="width: 100%;height: 22px;">
+                  <option *ngFor="let s of suppliers" [value]="s.supplier_ID">{{s.supplier_Name}}</option>
+                </select>
+              </div>
+              <div class="span2">Contact:</div>
+              <div class="span2">
+                <select id="ddlcontact" [(ngModel)]="contact_ID" style="width: 100%;height: 22px;">
+                  <option *ngFor="let c of contacts" [value]="c.contact_ID" [selected]="c.contact_ID">{{c.contact_Name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row-form clearfix">
+              <div class="12">
+                <div #dvScroll class="block-fluid table-sorting clearfix" style="max-height: 300px; overflow-y: auto;-ms-overflow-style: -ms-autohiding-scrollbar;">
+                  <table cellpadding="0" cellspacing="0" width="100%" id="tblDetail" class="table table-responsive">
+                    <thead>
+                      <tr>
+                        <th>Sr#.</th>
+                        <th class="col-md-5">Item</th>
+                        <th>Unit Price</th>
+                        <th>Qty.</th>
+                        <th>Cost</th>
+                        <th>Disc. Rate</th>
+                        <th>Discount </th>
+                        <th>Net Amount</th>
+                        <th class="col-md-1">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let i of OrderDetails let idx = index">
+                        <td style="padding: 0px; ">{{idx+1}}</td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectName else viewName"> </div>
+                          <ng-template #viewName>
+                            <span ng-show="editMode">{{i.item_Name}}</span>
+                          </ng-template>
+                          <ng-template #selectName>
+                            <select id="itemEdit" class="input-large" [(ngModel)]="newselectedItem" (change)="updateItem(i,newselectedItem.item_Code,newselectedItem.item_Name,newselectedItem.unit_Price)"
+                                    style="width: 100%;height: 22px;">
+                              <option *ngFor="let it of items" [ngValue]="it" [value]="it.item_Code" [selected]="it.item_Code">{{it.item_Name}}</option>
+                            </select>
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectPrice else viewPrice"> </div>
+                          <ng-template #viewPrice>
+                            <span ng-show="editMode">{{i.unit_Price}}</span>
+                          </ng-template>
+                          <ng-template #selectPrice>
+                            <input type="number" class="input-mini" [(ngModel)]="i.unit_Price" />
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectQty else viewQty"> </div>
+                          <ng-template #viewQty>
+                            <span ng-show="editMode">{{i.quantity}}</span>
+                          </ng-template>
+                          <ng-template #selectQty>
+                            <input type="number" class="input-mini" [(ngModel)]="i.quantity" />
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectCost else viewCost"> </div>
+                          <ng-template #viewCost>
+                            <span ng-show="editMode">{{i.purchase_Cost}}</span>
+                          </ng-template>
+                          <ng-template #selectCost>
+                            {{ (i.quantity) * (i.unit_Price)}}
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectRate else viewRate"> </div>
+                          <ng-template #viewRate>
+                            <span ng-show="editMode">{{i.discount_Rate}}</span>
+                          </ng-template>
+                          <ng-template #selectRate>
+                            <input type="number" class="input-mini" [(ngModel)]="i.discount_Rate" />
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectDAmount else viewDAmount"> </div>
+                          <ng-template #viewDAmount>
+                            <span ng-show="editMode">{{i.discount_Amount}}</span>
+                          </ng-template>
+                          <ng-template #selectDAmount>
+                            {{(i.quantity) * (i.unit_Price) * (i.discount_Rate)/100}}
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div *ngIf="i.edit_Mode; then selectVAmount else viewNAmount"> </div>
+                          <ng-template #viewNAmount>
+                            <span ng-show="editMode">{{i.net_Amount}}</span>
+                          </ng-template>
+                          <ng-template #selectVAmount>
+                            {{(i.quantity) * (i.unit_Price) - ((i.quantity) * (i.unit_Price) * (i.discount_Rate)/100) }}
+                          </ng-template>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <div class="btn-group" *ngIf="i.edit_Mode; then ok else pencel">
+                            <button class="btn btn-small btn-danger tip" data-original-title="Delete user" type="button" value="Delete" id="remove">
+                              <span class="icon-remove icon-white"></span>
+                            </button>
+                          </div>
+                          <ng-template #ok>
+                            <button class="btn btn-small btn-success tip" data-original-title="Quick save" type="button" (click)="changeMode(idx,i,0)"
+                                    id="update">
+                              <span class="icon-ok icon-white"></span>
+                            </button>
+                          </ng-template>
+                          <ng-template #pencel>
+                            <button class="btn btn-small btn-warning tip" data-original-title="Hide" type="button" (click)="changeMode(idx,i,1)" id="edit">
+                              <span class="icon-pencil icon-white"></span>
+                            </button>
+                          </ng-template>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 0px; "> </td>
+                        <td style="padding: 0px; ">
+                          <select id="item_ID" class="s2_2" [(ngModel)]="selectedItem" (change)="changeItem(selectedItem.item_Code)" style="width: 100%;height: 22px;"
+                                  placeholder="Pick a number">
+                            <option *ngFor="let i of items" [ngValue]="i" [selected]="i.item_Code">{{i.item_Name}}</option>
+                          </select>
+                        </td>
+                        <td style="padding: 0px; ">
+                          <input type="number" [(ngModel)]="selectedItem.unit_Price" class="input-mini" ng-hide="editMode" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)" />
+                        </td>
+                        <td style="padding: 0px; ">
+                          <input type="number" [(ngModel)]="Quantity" class="input-mini" ng-hide="editMode" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)" />
+                        </td>
+                        <td style="padding: 0px; ">
+                          {{ (Quantity) * (selectedItem.unit_Price)}}
+                        </td>
+                        <td style="padding: 0px; ">
+                          <input type="number" [(ngModel)]="Discount_Rate" class="input-mini" ng-hide="editMode" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)" />
+                        </td>
+                        <td style="padding: 0px; ">
+                          {{(Quantity) * (selectedItem.unit_Price) * (Discount_Rate)/100}}
+                        </td>
+                        <td style="padding: 0px; ">
+                          {{(Quantity) * (selectedItem.unit_Price) - ((Quantity) * (selectedItem.unit_Price) * (Discount_Rate)/100) }}
+                        </td>
+                        <td class="btn-group" style="padding: 0px; ">
+                          <button type="button" class="btn btn-small btn-warning tip" (click)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)"
+                                  data-original-title="Quick save" ng-click="addrow()" id="adds">
+                            <span class="icon-plus icon-white"></span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="row-form clearfix">
+                  <div class="span6">
+                    <div class="clearfix">
+                      <div class="span2">Description:</div>
+                      <div class="span10">
+                        <textarea [(ngModel)]="remarks" name="textarea" placeholder="Please text here..."></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="span4">
+                    <div class="clearfix">
+                      <div class="span4">
+                        Freight Term:
+                      </div>
+                      <div class="span6">
+                        <select id="ddlFrieghtTerm" [(ngModel)]="frieght_Id" style="width: 100%;height: 22px;" (change)="frieghtChange()">
+                          <option *ngFor="let p of FrieghtTermsList" [value]="p.frieght_Id" [selected]="freight_Term">{{p.frieght_Name}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="clearfix">
+                      <div class="span4" style="font-weight: bold;" id="freightlbl">
+                        Freight:
+                      </div>
+                      <div class="span6" id="freighttxt">
+                        <input type='text' class="form-control input-mini" [(ngModel)]="freight_Chrgs" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="span4" style="display:none">
+                    <div class="clearfix">
+                      <div class="span4">
+                        Payment Term:
+                      </div>
+                      <div class="span6">
+                        <select id="ddlPaymentTerms" [(ngModel)]="payment_ID" (change)="paymentTermChange()" style="width: 100%;height: 22px;">
+                          <option *ngFor="let p of payments" [value]="p.payment_ID" [selected]="payment_ID">{{p.payment_Value}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="clearfix">
+                      <div class="span4" id="paymentDateLbl">
+                        Payment Date:
+                      </div>
+                      <div class="span6" id="paymentDateTxt">
+                        <input type="date" [(ngModel)]="paymentDate" id="paymentDate" style="width: 90%;height: 13px;" />
+                      </div>
+                    </div>
+                    <div class="clearfix">
+                      <div class="span4">
+                        Shipping Method:
+                      </div>
+                      <div class="span6">
+                        <select id="ddlShipMethod" [(ngModel)]="method_Id" style="width: 100%;height: 22px;">
+                          <option *ngFor="let p of ShipMethodList" [value]="p.method_Id" [selected]="shipping_Method">{{p.method_Name}}</option>
+                        </select>
+                      </div>
+                    </div>
+    
+                  </div>
+                  <div class="span2">
+                    <div class="clearfix">
+                      <div class="span8" align="right" style="font-weight: bold;">
+                        Total Amount:
+                      </div>
+                      <div class="span4" align="left" style="font-weight: bold;">
+                        {{TotalCost()}}
+                      </div>
+                    </div>
+                    <div class="clearfix">
+                      <div class="span8" align="right" style="font-weight: bold;">
+                        Total Discount:
+                      </div>
+                      <div class="span2" align="left" style="font-weight: bold;">
+                        {{ TotalDiscount() }}
+                      </div>
+                    </div>
+                    <div class="clearfix">
+                      <div class="span8" align="right" style="font-weight: bold;">
+                        Net Amount:
+                      </div>
+                      <div class="span2" align="left" style="font-weight: bold;">
+                        {{ TotalAmount() }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button id="submitAdd" disabled="tr" class="btn btn-success" data-dismiss="modal" (click)="saveOrder(purchase_Order_ID,pO_Date,1,0,order_Envoy,0,0,supplier_ID,contact_ID,delivery_Date,Due_Date,method_Id,payment_ID,frieght_Id,TotalCost(),TotalDiscount(),0,0,freight_Chrgs,TotalAmount(),remarks,1,'New',paymentDate,0,0,0,'New123',0,0,1,1,0)">Save</button>
+                <button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Close</button>
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+    </div>
+  </div>
+</ng-template>

@@ -158,7 +158,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
     getPageDetail(page_ID) {
        // this.onReports();
-       // alert("navigate");
+        alert("clicked");
        // this.router.navigate(['/login']);
         this.service.getPageDetail(page_ID)
             .subscribe(response => {
@@ -188,9 +188,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
                 //sessionStorage.setItem('rptURL', this.URL);
              //   sessionStorage.setItem('rptURL', this.detail[0].url);
                 if (this.pageType == 1) {
+                    alert("1 preseed");
                     this.URL = "" + this.formURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";                  
                     sessionStorage.setItem('rptURL', this.URL);
-                    this.router.navigate(['/dashboard/redirect']);
+                    this.router.navigate(['/purchase-order']);
                 }
                 else {
                     this.URL = "" + this.reportURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";

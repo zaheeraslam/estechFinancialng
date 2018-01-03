@@ -49,6 +49,8 @@
 
 // Actual modal
 .modal-content {
+  left: -70%;
+  width: 1100px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -108,6 +110,7 @@
   // Enable `flex-grow: 1` so that the body take up as much space as possible
   // when should there be a fixed height on `.modal-dialog`.
   flex: 1 1 auto;
+  flex-grow: 1;
   padding: $modal-inner-padding;
 }
 
