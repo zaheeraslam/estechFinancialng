@@ -4,3 +4,34 @@
 @import "utils";
 @import "rtl";
 @import "responsive";
+
+body {
+    margin: 0;    
+    font-size: .8rem;
+    font-weight: 200;
+    line-height: 1;
+   
+}
+.form-control:not([size]):not([multiple]) {
+    height: calc(1.75rem + 2px);  
+    padding: 0.175rem 0.35rem;
+    font-size: .8rem;
+   
+
+}
+select.form-control:not([size]):not([multiple]) {
+    height: calc(1.75rem + 2px);
+}
+
+.btn-small:not([size]):not([multiple]) {
+  
+    height: calc(1.75rem + 2px);  
+   
+    font-size: .8rem;
+    
+}
+.table th, .table td {
+    padding: 0.50rem;
+    
+}
+

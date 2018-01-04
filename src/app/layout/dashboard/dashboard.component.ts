@@ -15,6 +15,8 @@ export class DashboardComponent implements OnInit {
     logedInUserID : any;
     cardType: any = 1;
     cards:any [];
+    colors = ['#ff0000', '#00ff00', '#0000ff', '#00FFFF', '#5F9EA0', '#6495ED', '#696969', '#CD853F', '#CD853F'];
+    cardColor = this.colors[Math.floor(Math.random() * this.colors.length)];
     constructor(private service: CardService) {
          this.logedInUserID = sessionStorage.getItem('user_ID');
          //alert(this.logedInUserID);

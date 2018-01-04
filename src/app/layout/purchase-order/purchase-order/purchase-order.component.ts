@@ -12,7 +12,8 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   @ViewChild('dvScroll') private myScrollContainer: ElementRef;
-
+  // for date picker
+  model:any;
   //  public exampleData: Array<Select2OptionData>;
   public supp: any;
   //modal poperty
@@ -496,6 +497,7 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     Total_Amount: any, remarks: any, Reorder_ID: any, Order_Type: any, paymentDate: any,
     Voucher_ID: any, Pay_Voucher_ID: any, Cancel: any, mode: any, POGUID: any, Customer_ID: any,
     C_Contact_Person_ID: any, Requisition_ID: any, Day_Id: any, IsServiceInvoice: any) {
+      alert("pressed");
 
     //if (!this.guidExist('87cd31e4-9b25-0e73-70a5-f308504d0f5b')) {     
     if (Total_Amount > 0) {
