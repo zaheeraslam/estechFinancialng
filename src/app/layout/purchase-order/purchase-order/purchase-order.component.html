@@ -270,14 +270,23 @@
           </fieldset>
         </div>
         <div class="col-md-2">
-          <span>Freight Term:</span>
+          <div class="row">
+              <span>Freight Term:</span>
+          </div>&nbsp;&nbsp;
+          <div class="row">
+             <span>Freight:</span>
+          </div> 
         </div>
         <div class="col-md-2">
-          <div class="form-group">
-            <select class="form-control">
-              <option>1</option>
-              <option>2</option>
-            </select>
+          <div class="row">
+              <div class="form-group">
+                  <select class="form-control" >
+                      <option *ngFor="let p of FrieghtTermsList" [value]="p.frieght_Id" [selected]="freight_Term">{{p.frieght_Name}}</option>
+                  </select>
+                </div>
+          </div>
+          <div class="row">
+              <input type='text' style="width:30%" class="form-control" [(ngModel)]="freight_Chrgs" />
           </div>
         </div>
         <div class="col-md-2">

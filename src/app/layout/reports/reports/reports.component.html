@@ -1,210 +1,201 @@
-<nav class="navbar navbar-inverse" style="color:#7E8FC4;">
+<nav class="navbar navbar-inverse" style="background-color:#7E8FC4; color:white;">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand">{{this.params.name}} Report</a>
     </div>
     <ul class="nav navbar-nav navbar-right" [hidden]="iframeShow">
-      <li ><button class="btn btn-warning" (click)="backToCriteria()">Back</button> </li>
+      <li>
+        <button class="btn btn-warning" (click)="backToCriteria()">Back</button>
+      </li>
     </ul>
   </div>
-</nav>
-<div class="container" [hidden]="criteriaShow">
-  <form #f="ngForm" (ngSubmit)="submit(f.value)" >
+</nav>&nbsp;
+<div class="" [hidden]="criteriaShow">
+  <form #f="ngForm" (ngSubmit)="submit(f.value)">
 
-      <div class="row">
-        <div class="col-md-3">
-          <div class="form-group">
-            <label for="office">Office</label>
-            <angular2-multiselect [data]="offices"
-                                  [(ngModel)]="selectedofficeCode"
-                                  [settings]="settings1"
-                                  name="Office"
-                                  class="form-control input-sm"
-                                  >
-            </angular2-multiselect>
+    <div class="row">
+      <div class="col-md-2 rptlbl">
+        <label for="office">Office:</label>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
 
-          </div>
+          <angular2-multiselect [data]="offices" [(ngModel)]="selectedofficeCode" [settings]="settings1" name="Office" class="form-control input-sm">
+          </angular2-multiselect>
+
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-3">
-          <div class="form-group">
-            <label for="fromdate">From Date</label>
-            <div class='' id='datetimepicker1' >
-              <input name="Datefrom" [(ngModel)]="fromdate" id="fromdate" style="height:45px;width:281px" type="date" class="form-control" />
-            </div>
-          </div>
-
-        </div>
-        <!--  col-md-3   -->
-        <div *ngIf="toDateShow" class="col-md-3">
-          <div class="form-group">
-            <label for="todate">To Date</label>
-            <div class='' id='datetimepicker1'>
-              <input name="Dateto" [(ngModel)]="todate" id="todate" style="height:45px;width:281px" type="date" class="form-control" />
-
-            </div>
-          </div>
-        </div>
-        <!--  col-md-3   -->
+    </div>
+    <div class="row">
+      <div class="col-md-2 rptlbl">
+        <label for="fromdate">From Date</label>
       </div>
-      <div class="row">
-        <div *ngIf="customerShow" class="col-md-3">
-          <div class="form-group">
-            <label for="customer">Customer</label>
-            <angular2-multiselect [data]="customers"
-                                  [(ngModel)]="customerId"
-                                  [settings]="settings1"
-                                  name="Customer">
-            </angular2-multiselect>
-          </div>
-        </div>
-        <div *ngIf="saleOrderShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="saleorder">Sale Order</label>
-            <input ngModel class="form-control" name="SaleOrderID" #saleorder="ngModel" />
-          </div>
-        </div>
-        <!--  col-md-3   -->
-        <div *ngIf="supplierShow" class="col-md-3">
-          <div class="form-group">
-            <label for="supplier">Supplier</label>
-            <angular2-multiselect [data]="suppliers"
-                                  [(ngModel)]="supplierId"
-                                  [settings]="settings1"
-                                  name="Supplier">
-            </angular2-multiselect>
-          </div>
-        </div>
-        <div *ngIf="purchaseOrderShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="purchaseorder">Purchase Order</label>
-            <input ngModel class="form-control" name="PurchaseOrderID" #purchaseorder="ngModel" />
-          </div>
-        </div>
-        <!--  col-md-3   -->
-      </div>
-      <div class="row">
-        <div *ngIf="invoiceShow" class="col-md-3">
-          <div class="form-group">
-            <label for="invoice">Invoice #</label>
-            <input ngModel class="form-control" name="InvoiceID" #invoice="ngModel" />
+      <div class="col-md-3">
+        <div class="form-group">
+          <div class='' id='datetimepicker1'>
+            <input name="Datefrom" [(ngModel)]="fromdate" id="fromdate" type="date" class="form-control" />
           </div>
         </div>
 
       </div>
-      <div class="row">
-        <div *ngIf="customerCategoryShow" class="col-md-3">
-          <div class="form-group">
-            <label for="category">Category</label>
-            <angular2-multiselect [data]="customerCategories"
-                                  [(ngModel)]="customerCategoryCode"
-                                  [settings]="settings"
-                                  name="CustomerCategory">
-            </angular2-multiselect>
+      <!--  col-md-3   -->
+      <div *ngIf="toDateShow" class="col-md-2 rptlbl">
+        <label for="todate">To Date</label>
+      </div>
+      <div *ngIf="toDateShow" class="col-md-3">
+        <div class="form-group">
+          <div class='' id='datetimepicker1'>
+            <input name="Dateto" [(ngModel)]="todate" id="todate" type="date" class="form-control" />
+
           </div>
         </div>
       </div>
-      <div class="row">
-        <div *ngIf="itemCategoryShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="itemcategory">Category</label>
-            <angular2-multiselect [data]="itemCategories"
-                                  [(ngModel)]="categoryCode"
-                                  [settings]="settings"
-                                  name="Category">
-            </angular2-multiselect>
-          </div>
-        </div>
-        <div *ngIf="subCategoryShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="itemsubcategory">Sub Category</label>
-            <angular2-multiselect [data]="subCategories"
-                                  [(ngModel)]="subCategoryCode"
-                                  [settings]="settings"
-                                  name="SubCategory">
-            </angular2-multiselect>
-          </div>
+      <!--  col-md-3   -->
+    </div>
+    <div class="row">
+      <div *ngIf="customerShow" class="col-md-2 rptlbl">
+        <label for="customer">Customer:</label>
+      </div>
+      <div *ngIf="customerShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="customers" [(ngModel)]="customerId" [settings]="settings1" name="Customer">
+          </angular2-multiselect>
         </div>
       </div>
-      <div class="row">
-        <div *ngIf="itemShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="item">Item</label>
-            <angular2-multiselect [data]="items"
-                                  [(ngModel)]="itemCode"
-                                  [settings]="settings1"
-                                  name="Item">
-            </angular2-multiselect>
-          </div>
+      <div *ngIf="saleOrderShow" class="col-md-2 rptlbl">
+        <label for="saleorder">Sale Order:</label>
+      </div>
+      <div *ngIf="saleOrderShow" class="col-md-3">
+        <div class="form-group">
+          <input ngModel class="form-control" name="SaleOrderID" #saleorder="ngModel" />
         </div>
       </div>
-      <div class="row">
-        <div *ngIf="districtShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="district">Region</label>
-
-            <angular2-multiselect [data]="districts"
-                                  [(ngModel)]="districtCode"
-                                  [settings]="settings"
-                                  name="District">
-            </angular2-multiselect>
-          </div>
-        </div>
-        <div *ngIf="cityShow" class="col-md-3">
-
-          <div class="form-group">
-            <label for="city">City/Area</label>
-
-            <angular2-multiselect [data]="cities"
-                                  [(ngModel)]="selectedcityCode"
-                                  [settings]="settings"
-                                  (onSelect)="onCitySelect($event)"
-                                  (onDeSelect)="OnCityDeSelect($event)"
-                                  name="Tehsil">
-            </angular2-multiselect>
-          </div>
-        </div>
-
+      <!--  col-md-3   -->
+      <div *ngIf="supplierShow" class="col-md-2 rptlbl">
+        <label for="supplier">Supplier:</label>
       </div>
-      <div class="row">
-        <div class="col-sm-2">
-
-          <div class="form-group">
-            <label for="district">PDF</label>
-
-            <input type="checkbox" class="" id="exportToPDF" name="exportToPDF" [(ngModel)]="exportToPDF" (change)="ExportPDFSelect('pdf')" />
-          </div>
+      <div *ngIf="supplierShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="suppliers" [(ngModel)]="supplierId" [settings]="settings1" name="Supplier">
+          </angular2-multiselect>
         </div>
-        <div class="col-sm-2">
-
-          <div class="form-group">
-            <label for="city">Excel</label>
-            <input type="checkbox" class="" id="exportToExcel" name="exportToExcel" [(ngModel)]="exportToExcel" (change)="ExportPDFSelect('excel')" />
-
-          </div>
+      </div>
+      <div *ngIf="purchaseOrderShow" class="col-md-2 rptlbl">
+        <label for="purchaseorder">Purchase Order:</label>
+      </div>
+      <div *ngIf="purchaseOrderShow" class="col-md-3">
+        <div class="form-group">
+          <input ngModel class="form-control" name="PurchaseOrderID" #purchaseorder="ngModel" />
         </div>
-        <div class="col-sm-2">
-          <input type="hidden" name="reportName" [(ngModel)]="this.params.name" />
-          <button type="submit" class="btn btn-danger pull-right">View Report</button>
+      </div>
+      <!--  col-md-3   -->
+    </div>
+    <div class="row">
+      <div *ngIf="invoiceShow" class="col-md-2 rptlbl">
+        <label for="invoice">Invoice #:</label>
+      </div>
+      <div *ngIf="invoiceShow" class="col-md-3">
+        <div class="form-group">
+          <input ngModel class="form-control" name="InvoiceID" #invoice="ngModel" />
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div *ngIf="customerCategoryShow" class="col-md-2 rptlbl">
+        <label for="category">Category:</label>
+      </div>
+      <div *ngIf="customerCategoryShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="customerCategories" [(ngModel)]="customerCategoryCode" [settings]="settings" name="CustomerCategory">
+          </angular2-multiselect>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div *ngIf="itemCategoryShow" class="col-md-2 rptlbl">
+        <label for="itemcategory">Category:</label>
+      </div>
+      <div *ngIf="itemCategoryShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="itemCategories" [(ngModel)]="categoryCode" [settings]="settings" name="Category">
+          </angular2-multiselect>
+        </div>
+      </div>
+      <div *ngIf="subCategoryShow" class="col-md-2 rptlbl">
+        <label for="itemsubcategory">Sub Category</label>
+      </div>
+      <div *ngIf="subCategoryShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="subCategories" [(ngModel)]="subCategoryCode" [settings]="settings" name="SubCategory">
+          </angular2-multiselect>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div *ngIf="itemShow" class="col-md-2 rptlbl">
+        <label for="item">Item:</label>
+      </div>
+      <div *ngIf="itemShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="items" [(ngModel)]="itemCode" [settings]="settings1" name="Item">
+          </angular2-multiselect>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div *ngIf="districtShow" class="col-md-2 rptlbl">
+        <label for="district">Region:</label>
+      </div>
+      <div *ngIf="districtShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="districts" [(ngModel)]="districtCode" [settings]="settings" name="District">
+          </angular2-multiselect>
+        </div>
+      </div>
+      <div *ngIf="cityShow" class="col-md-2 rptlbl">
+        <label for="city">City/Area:</label>
+      </div>
+      <div *ngIf="cityShow" class="col-md-3">
+        <div class="form-group">
+          <angular2-multiselect [data]="cities" [(ngModel)]="selectedcityCode" [settings]="settings" (onSelect)="onCitySelect($event)"
+            (onDeSelect)="OnCityDeSelect($event)" name="Tehsil">
+          </angular2-multiselect>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 rptlbl">
+        <label for="district">PDF</label>
+      </div>
+      <div class="col-sm-1 rptlbl">
+        <div class="form-group">
+          <input type="checkbox" class="" id="exportToPDF" name="exportToPDF" [(ngModel)]="exportToPDF" (change)="ExportPDFSelect('pdf')"
+          />
+        </div>
+      </div>
+      <div class="col-sm-2 rptlbl">
+        <label for="city">Excel</label>
+      </div>
+      <div class="col-sm-1 rptlbl">
+        <div class="form-group">
+          <input type="checkbox" class="" id="exportToExcel" name="exportToExcel" [(ngModel)]="exportToExcel" (change)="ExportPDFSelect('excel')"
+          />
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <input type="hidden" name="reportName" [(ngModel)]="this.params.name" />
+        <button type="submit" class="btn btn-danger pull-right">View Report</button>
+      </div>
+    </div>
 
-        </div>
-      
-      <!--<p>{{ f.value | json }}</p>-->
-  
+    <!--<p>{{ f.value | json }}</p>-->
+
   </form>
- 
+
 
 </div>
 
- <!--Workplace-->
+<!--Workplace-->
 <div [hidden]="iframeShow" class="">
   <div class=" ">
 
