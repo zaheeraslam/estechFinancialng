@@ -7,10 +7,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
+import { Select2Module } from 'ng2-select2';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthGuard, HeaderService, LoginService, ReportService, CardService, PurchaseOrderService } from './shared';
+import { AuthGuard, HeaderService, LoginService, ReportService, CardService, PurchaseOrderService, SharedPipesModule, DirectiveModule } from './shared';
+
 
 
 // AoT requires an exported function for factories
@@ -24,7 +25,10 @@ export function createTranslateLoader(http: HttpClient) {
     imports: [
         CommonModule,
         BrowserModule,
+        DirectiveModule,
+        SharedPipesModule,
         FormsModule,
+        Select2Module,
         BrowserAnimationsModule,
         HttpClientModule,
         HttpModule,
@@ -38,6 +42,7 @@ export function createTranslateLoader(http: HttpClient) {
         AppRoutingModule
     ],
     declarations: [AppComponent],
+
     providers: [AuthGuard, HeaderService, LoginService, ReportService, CardService, PurchaseOrderService],
     bootstrap: [AppComponent]
 })

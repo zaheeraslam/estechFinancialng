@@ -10,7 +10,9 @@
     </ul>
   </div>
 </nav>&nbsp;
+
 <div class="" [hidden]="criteriaShow">
+
   <form #f="ngForm" (ngSubmit)="submit(f.value)">
 
     <div class="row">
@@ -197,9 +199,11 @@
 
 <!--Workplace-->
 <div [hidden]="iframeShow" class="">
-  <div class=" ">
+  <div class="iframe-container">
 
     <!--<p>Showing: {{url}}</p>-->
-    <iframe style="border:none;" id="myFrame" [src]="url" width="100%" height="600"></iframe>
+    <iframe style="border:none;" id="myFrame" [src]="url" width="100%" height="600">
+      Browser unable to load ...
+    </iframe>
   </div>
 </div>

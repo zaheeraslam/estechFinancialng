@@ -2,8 +2,9 @@ import { Component, OnInit, AfterViewChecked, ViewChild, ElementRef } from '@ang
 import { PurchaseOrderService, Supplier, LoginService, OrderDetailss, Order, OrderDetail } from '../../../shared';
 import { UUID } from 'angular2-uuid';
 import * as $ from 'jquery';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-
+import { NgbModal, ModalDismissReasons, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { Select2OptionData } from 'ng2-select2';
+import {IMyDpOptions} from 'mydatepicker';
 @Component({
   selector: 'app-purchase-order',
   host: { '(window:keydown)': 'hotkeys($event)' },
@@ -11,9 +12,16 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./purchase-order.component.scss']
 })
 export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
+  public exampleData: Array<Select2OptionData>;
   @ViewChild('dvScroll') private myScrollContainer: ElementRef;
   // for date picker
-  model:any;
+  public myDatePickerOptions: IMyDpOptions = {
+    // other options...
+    dateFormat: 'dd/mm/yyyy',
+    inline: false,
+    height: '25px'
+};
+  model: any;
   //  public exampleData: Array<Select2OptionData>;
   public supp: any;
   //modal poperty
@@ -22,8 +30,9 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   order: any;
   status: any;
   orders: any[];
-  users: any[];
-  suppliers: any[];
+   users: any;
+
+  suppliers: Array<Select2OptionData>;
   contacts: any[];
   items: any[];
   unitPrices: any[];
@@ -38,7 +47,7 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   date = new Date();
   pO_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
   order_Envoy: any = 1;
-  supplier_ID: number;
+  supplier_ID: any;
   supplier_IDID: any;
   SupplierID: any = 0;
   purchase_Order_ID = 0;
@@ -73,9 +82,16 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   isLoading: boolean;
   color = '#0094ff';
   guidOrder: boolean;
+  settings1 = {
+    singleSelection: 'true',
+    enableSearchFilter: true
+  };
   //End Member Variables
 
-  constructor(private service: PurchaseOrderService, private LoginService: LoginService,private modalService: NgbModal ) {
+  constructor(private service: PurchaseOrderService,
+    private LoginService: LoginService,
+    private ngbDateParserFormatter: NgbDateParserFormatter,
+    private modalService: NgbModal) {
     this.OrderDetails = new Array<OrderDetailss>();
   }
   //ngOnInit
@@ -88,6 +104,7 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     this.getPayments();
     this.scrollToBottom();
     this.frieghtChange();
+
   }
   //orderDetails 
   orderDetails() {
@@ -121,21 +138,36 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         }
       });
   }
+  // convert dropdown lables
+  getDropdownList(arr: any[], valuetxt: any, displaytxt: any): any {
+    let ar: Array<any> = [];
+    if (arr != null) {
+      arr.forEach(
+        function (obj) {
+
+          ar.push({
+            id: obj[valuetxt],
+            text: obj[displaytxt]
+          });
+
+        });
+    }
+    return ar;
+  }
   //getPriviledgedOffices
   getPriviledgedOffices() {
     this.service.getPriviledgedOffices()
       .subscribe(response => {
-        this.users = (response.json());
+        this.users = response.json();
         this.order_Envoy = this.users[0].order_Envoy;
-        // console.log(this.users);
       });
   }
   //getSuppliers
   getSuppliers() {
     this.service.getSuppliers()
       .subscribe(response => {
-        this.suppliers = (response.json());
-        this.supplier_ID = this.suppliers[0].supplier_ID
+        this.suppliers = this.getDropdownList(response.json(), "supplier_ID", "supplier_Name");
+        this.supplier_ID = this.suppliers[0].id;
         this.changeSupplier(this.supplier_ID);
         //   console.log(response.json());
       });
@@ -155,7 +187,7 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   getItems() {
     this.service.getItems()
       .subscribe(response => {
-        this.items = (response.json());
+        this.items = this.getDropdownList(response.json(),"item_Code","item_Name");
         // this.ite = this.items;
         // this.item_Code = this.items[0].item_Code;
         //alert(this.item_Code);
@@ -265,10 +297,10 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     return total_Amount.toFixed(2);
   }
   //changeSupplier
-  changeSupplier(supplier_ID) {
-    this.service.getContacts(supplier_ID)
+  changeSupplier(e: any) {
+    this.service.getContacts(e.value)
       .subscribe(response => {
-        this.contacts = (response.json());
+        this.contacts = response.json();
         this.contact_ID = this.contacts[0].contact_ID;
         //  console.log(response.json());
       });
@@ -497,7 +529,7 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     Total_Amount: any, remarks: any, Reorder_ID: any, Order_Type: any, paymentDate: any,
     Voucher_ID: any, Pay_Voucher_ID: any, Cancel: any, mode: any, POGUID: any, Customer_ID: any,
     C_Contact_Person_ID: any, Requisition_ID: any, Day_Id: any, IsServiceInvoice: any) {
-      alert("pressed");
+    alert("pressed");
 
     //if (!this.guidExist('87cd31e4-9b25-0e73-70a5-f308504d0f5b')) {     
     if (Total_Amount > 0) {
@@ -511,7 +543,8 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         remarks, Reorder_ID, Order_Type, paymentDate, 0, 0, false, this.mode,
         this.guid, null, null, 1, 0,
         false, this.OrderDetails);
-
+      //let ngbDate = order.pO_Date;
+      //let myDate = this.ngbDateParserFormatter.format(ngbDate);
       if (this.mode != 0) {
         this.OrderDetails[0].edit_Mode = true;
       }
@@ -551,20 +584,20 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   // for modal
   open(content) {
     this.modalService.open(content).result.then((result) => {
-        this.closeResult = `Closed with: ${result}`;
+      this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
-        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
-}
+  }
 
-private getDismissReason(reason: any): string {
+  private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
-        return 'by pressing ESC';
+      return 'by pressing ESC';
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-        return 'by clicking on a backdrop';
+      return 'by clicking on a backdrop';
     } else {
-        return  `with: ${reason}`;
+      return `with: ${reason}`;
     }
-}// end of modal
+  }// end of modal
 }
 
