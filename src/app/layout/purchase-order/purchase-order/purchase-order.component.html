@@ -5,9 +5,7 @@
       <i class="fa fa-plus"></i>
     </button>
   </div>
-
   <div class="card-body table-responsive">
-
     <table class="table table-hover table-striped">
       <thead>
         <tr class="thclr">
@@ -32,8 +30,7 @@
           <td>{{dt.total_Amount}}</td>
           <td>
             <div class="btn-group">
-              <a class="btn btn-small btn-warning tip" href="#pnlAdd" data-toggle="modal" (click)="getDetailsByID(dt.purchase_Order_ID)"
-                id="edit">
+              <a class="btn btn-small btn-warning tip" (click)="getDetailsByID(dt.purchase_Order_ID,content)" id="edit">
                 <span class="fa fa-pencil text-white"></span>
               </a>
               <button class="btn btn-small btn-danger tip" data-original-title="Remove" type="button" value="Delete" (click)="getDetailsByID(dt.purchase_Order_ID)"
@@ -42,14 +39,11 @@
               </button>
             </div>
           </td>
-
         </tr>
-
       </tbody>
     </table>
   </div>
 </div>
-
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">Purchase Order Detail</h4>
@@ -57,71 +51,69 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
-    <div class="modal-body">
-      <div class="row">
-        <div class="col-md-2">
-          <span>Date:</span>
-        </div>
-        <div class="col-md-2">
-          <my-date-picker name="odpkr" [options]="myDatePickerOptions" [(ngModel)]="pO_Date" required></my-date-picker>
-          <!--<div class="input-group">
-            <input class="form-control" placeholder="dd-mm-yyyy" name="odpkr" [(ngModel)]="pO_Date" id="pO_Date" ngbDatepicker #odpkr="ngbDatepicker">
-            <div class="input-group-addon" (click)="odpkr.toggle()">
-              <span class="fa fa-calendar"></span>
-            </div>
-          </div>-->
+  <div id="alertWarning">
+    <p *ngFor="let alert of alerts">
+      <ngb-alert [type]="alert.type">{{ alert.message }}</ngb-alert>
+    </p>
+  </div>
 
-        </div>
-        <div class="col-md-2">
-          <span>Due Date:</span>
-        </div>
-        <div class="col-md-2">
-            <my-date-picker name="ddtpkr" [options]="myDatePickerOptions" [(ngModel)]="delivery_Date" required></my-date-picker>
-          <!--<div class="input-group">
-            <input class="form-control" placeholder="dd-mm-yyyy" name="ddtpkr" [(ngModel)]="delivery_Date" id="Due_Date" ngbDatepicker
-              #ddtpkr="ngbDatepicker">
-            <div class="input-group-addon" (click)="ddtpkr.toggle()">
-              <span class="fa fa-calendar"></span>
-            </div>
-          </div>-->
-        </div>
-        <div class="col-md-2">
-          <span>Purchase Officer:</span>
-        </div>
-        <div class="col-md-2">
-          <div class="form-group">
-            <select class="form-control" [(ngModel)]="order_Envoy" id="order_Envoy">
-              <option *ngFor="let u of users " [value]="u.order_Envoy">{{u.emp_Name}}</option>
-            </select>
-          </div>
+  <div class="modal-body">
+
+    <div class="row">
+      <div class="col-md-2">
+        <span>Date:</span>
+      </div>
+      <div class="col-md-2">
+        <!--<input type="date" class="form-control" [(ngModel)]="pO_Date" id="pO_Date" placeholder="dd-mm-yyyy">-->
+        <my-date-picker name="odpkr" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event)" [(ngModel)]="model" required></my-date-picker>
+        {{pO_Date}}
+      </div>
+      <div class="col-md-2">
+        <span>Due Date:</span>
+      </div>
+      <div class="col-md-2">
+        <input type="date" class="form-control" [(ngModel)]="delivery_Date" id="Due_Date" />
+      </div>
+      <div class="col-md-2">
+        <span>Purchase Officer:</span>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <select class="form-control" [(ngModel)]="order_Envoy" id="order_Envoy">
+            <option *ngFor="let u of users " [value]="u.order_Envoy">{{u.emp_Name}}</option>
+          </select>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-2">
-          <span>Supplier:</span>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <select2 [data]="suppliers" id="supplier_ID" [(ngModel)]="supplier_ID" (valueChanged)="changeSupplier($event)" [width]="600">
-            </select2>
-            <!--<select [(ngModel)]="supplier_ID" (change)="changeSupplier(supplier_ID)" id="supplier_ID" class="form-control">
+    </div>
+    <div class="row">
+      <div class="col-md-2">
+        <span>Supplier:</span>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <select2 [data]="suppliers" id="supplier_ID" [(ngModel)]="supplier_ID" (valueChanged)="changeSupplier($event)" [width]="600">
+          </select2>
+          <!--<select [(ngModel)]="supplier_ID" (change)="changeSupplier(supplier_ID)" id="supplier_ID" class="form-control">
               <option *ngFor="let s of suppliers" [value]="s.supplier_ID">{{s.supplier_Name}}</option>
             </select>-->
-          </div>
-        </div>
-        <div class="col-md-2">
-          <span>Contact:</span>
-        </div>
-        <div class="col-md-2">
-          <div class="form-group">
-            <select id="ddlcontact" [(ngModel)]="contact_ID" class="form-control">
-              <option *ngFor="let c of contacts" [value]="c.contact_ID" [selected]="c.contact_ID">{{c.contact_Name}}</option>
-            </select>
-          </div>
         </div>
       </div>
-      <div class="row">
+      <div class="col-md-2">
+        <span>Contact:</span>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <select id="ddlcontact" [(ngModel)]="contact_ID" class="form-control">
+            <option *ngFor="let c of contacts" [value]="c.contact_ID" [selected]="c.contact_ID">{{c.contact_Name}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div #dvScroll style="max-height: 250px; overflow-y: auto;-ms-overflow-style: -ms-autohiding-scrollbar;">
+
+
+
         <table class="table table-hover table-striped">
           <thead>
             <tr class="thclr">
@@ -137,7 +129,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i of OrderDetails let idx = index">
+            <tr *ngFor="let i of purchaseOrderDetails let idx = index">
               <td>{{idx+1}}</td>
               <td>
                 <div *ngIf="i.edit_Mode; then selectName else viewName"> </div>
@@ -145,12 +137,12 @@
                   <span ng-show="editMode">{{i.item_Name}}</span>
                 </ng-template>
                 <ng-template #selectName>
-                  <select2 [data]="items" id="itemEdit" [(ngModel)]="newselectedItem" (valueChanged)="updateItem(i,newselectedItem.item_Code,newselectedItem.item_Name,newselectedItem.unit_Price)">
+                  <select2 [data]="items" id="itemEdit"  [(ngModel)]="item_Code" (valueChanged)="updateItem(i,item_Code,item_Name,unit_Price)">
                   </select2>
                   <!--<select id="itemEdit" class="form-control " [(ngModel)]="newselectedItem" (change)="updateItem(i,newselectedItem.item_Code,newselectedItem.item_Name,newselectedItem.unit_Price)">
-                    <option *ngFor="let it of items" [ngValue]="it" [value]="it.item_Code" [selected]="it.item_Code">{{it.item_Name}}</option>
-                  </select>-->
-
+                      <option *ngFor="let it of items" [ngValue]="it" [value]="it.item_Code" [selected]="it.item_Code">{{it.item_Name}}</option>
+                    </select>-->
+                   
                 </ng-template>
               </td>
               <td>
@@ -159,7 +151,7 @@
                   <span ng-show="editMode">{{i.unit_Price}}</span>
                 </ng-template>
                 <ng-template #selectPrice>
-                  <input type="number" class="form-control" [(ngModel)]="i.unit_Price" />
+                  <input type="number" class="form-control" [(ngModel)]="i.unit_Price" min="1" />
                 </ng-template>
               </td>
               <td>
@@ -168,7 +160,7 @@
                   <span ng-show="editMode">{{i.quantity}}</span>
                 </ng-template>
                 <ng-template #selectQty>
-                  <input type="number" class="form-control" [(ngModel)]="i.quantity" />
+                  <input type="number" class="form-control" [(ngModel)]="i.quantity" min="1" (change)="changeQuantityEdit(i,i.quantity)" />
                 </ng-template>
               </td>
               <td>
@@ -186,7 +178,8 @@
                   <span ng-show="editMode">{{i.discount_Rate}}</span>
                 </ng-template>
                 <ng-template #selectRate>
-                  <input type="number" class="form-control" [(ngModel)]="i.discount_Rate" />
+                  <input type="number" class="form-control" [(ngModel)]="i.discount_Rate" (change)="changeDiscountRateEdit(i,i.discount_Rate)"
+                  />
                 </ng-template>
               </td>
               <td>
@@ -223,44 +216,51 @@
                   <button class="btn btn-small btn-warning tip" data-original-title="Hide" type="button" (click)="changeMode(idx,i,1)" id="edit">
                     <span class="fa fa-pencil text-white"></span>
                   </button>
+                  <button class="btn btn-small btn-danger tip" data-original-title="Delete user" type="button" value="Delete" id="remove" (click)="changeMode(idx,i,2)">
+                    <span class="fa fa-remove text-white"></span>
+                  </button>
                 </ng-template>
               </td>
             </tr>
             <tr>
-              <td> </td>
               <td>
-                <select2 [data]="items" id="item_ID" [(ngModel)]="selectedItem" (valueChanged)="changeItem(selectedItem.item_Code)">
+                <input type="text" id="txt" (keyup.enter)="addGrid(item_Code,item_Name,unit_Price,Quantity,Discount_Rate)" style="width:3px"
+                />
+              </td>
+              <td>
+                <select2 [data]="items" id="item_ID" [value]="item_Code" (valueChanged)="changeItem($event)">
                 </select2>
                 <!--<select id="item_ID" class="form-control " [(ngModel)]="selectedItem" (change)="changeItem(selectedItem.item_Code)" placeholder="Pick a number">
-                  <option *ngFor="let i of items" [ngValue]="i" [selected]="i.item_Code">{{i.item_Name}}</option>
-                </select>-->
+                    <option *ngFor="let i of items" [ngValue]="i" [selected]="i.item_Code">{{i.item_Name}}</option>
+                  </select>-->
+              </td>
+              <td style="width:10%">
+
+                <input type="number" [(ngModel)]="unit_Price" class="form-control" ng-hide="editMode" min="1" (keyup.enter)="addGrid(item_Code,item_Name,unit_Price,Quantity,Discount_Rate)"
+                />
+              </td>
+              <td style="width:10%">
+                <input type="number" [(ngModel)]="Quantity" class="form-control" ng-hide="editMode" min="1" (change)="changeQuantity(Quantity)"
+                  (keyup.enter)="addGrid(item_Code,item_Name,unit_Price,Quantity,Discount_Rate)" />
 
               </td>
-              <td style="width:10%">
-                <input type="number" [(ngModel)]="selectedItem.unit_Price" class="form-control" ng-hide="editMode" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)"
-                />
-              </td>
-              <td style="width:10%">
-                <input type="number" [(ngModel)]="Quantity" class="form-control" ng-hide="editMode" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)"
-                />
-              </td>
               <td>
-                {{ (Quantity) * (selectedItem.unit_Price)}}
+                {{ (Quantity) * (unit_Price)}}
               </td>
               <td style="width:10%">
-                <input type="number" [(ngModel)]="Discount_Rate" class="form-control" ng-hide="editMode" (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)"
-                />
+                <input type="number" [(ngModel)]="Discount_Rate" class="form-control" ng-hide="editMode" min="0" max="100" (change)="changeDiscountRate(Discount_Rate)"
+                  (keyup.enter)="addGrid(item_Code,item_Name,unit_Price,Quantity,Discount_Rate)" />
               </td>
               <td>
-                {{(Quantity) * (selectedItem.unit_Price) * (Discount_Rate)/100}}
+                {{(Quantity) * (unit_Price) * (Discount_Rate)/100}}
               </td>
               <td>
-                {{(Quantity) * (selectedItem.unit_Price) - ((Quantity) * (selectedItem.unit_Price) * (Discount_Rate)/100) }}
+                {{(Quantity) * (unit_Price) - ((Quantity) * (unit_Price) * (Discount_Rate)/100) }}
               </td>
               <td class="btn-group">
-                <button type="button" class="btn btn-small btn-warning tip" (click)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)"
-                  (keyup.enter)="addGrid(selectedItem.item_Code,selectedItem.item_Name,selectedItem.unit_Price,Quantity,Discount_Rate)"
-                  data-original-title="Quick save" ng-click="addrow()" id="adds">
+                <button type="button" class="btn btn-small btn-warning tip" (click)="addGrid(item_Code,item_Name,unit_Price,Quantity,Discount_Rate)"
+                  (keyup.enter)="addGrid(item_Code,item_Name,unit_Price,Quantity,Discount_Rate)" data-original-title="Quick save"
+                  ng-click="addrow()" id="adds">
                   <span class="fa fa-check text-white"></span>
                 </button>
               </td>
@@ -268,68 +268,76 @@
           </tbody>
         </table>
       </div>
-      <div class="row">
-        <div class="col-md-1">
-          <span>Description:</span>
+    </div>
+    <div class="row">
+      <div class="col-md-1">
+        <span>Description:</span>
+      </div>
+      <div class="col-md-5">
+        <fieldset class="form-group">
+          <textarea [(ngModel)]="remarks" id="de" name="textarea" placeholder="Please text here..." class="form-control" style="height:auto;"
+            rows="5"></textarea>
+        </fieldset>
+      </div>
+      <div class="col-md-2">
+        <div class="row">
+          <span>Freight Term:</span>
+        </div>&nbsp;&nbsp;
+        <div class="row" id="freightlbl">
+          <span>Freight:</span>
         </div>
-        <div class="col-md-5">
-          <fieldset class="form-group">
-            <textarea [(ngModel)]="remarks" name="textarea" placeholder="Please text here..." class="form-control" style="height:auto;"
-              rows="5"></textarea>
-          </fieldset>
-        </div>
-        <div class="col-md-2">
-          <div class="row">
-            <span>Freight Term:</span>
-          </div>&nbsp;&nbsp;
-          <div class="row">
-            <span>Freight:</span>
+      </div>
+      <div class="col-md-2">
+        <div class="row">
+          <div class="form-group">
+            <select id="ddlFrieghtTerm" [(ngModel)]="frieght_Id" class="form-control" (change)="frieghtChange()">
+              <option *ngFor="let p of FrieghtTermsList" [value]="p.frieght_Id" [selected]="freight_Term">{{p.frieght_Name}}</option>
+            </select>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="row">
-            <div class="form-group">
-              <select class="form-control">
-                <option *ngFor="let p of FrieghtTermsList" [value]="p.frieght_Id" [selected]="freight_Term">{{p.frieght_Name}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="row">
-            <input type='text' style="width:30%" class="form-control" [(ngModel)]="freight_Chrgs" />
-          </div>
+        <div class="row" id="freighttxt">
+          <input type='text' style="width:50%" class="form-control" [(ngModel)]="freight_Chrgs" />
         </div>
-        <div class="col-md-2">
-          <div class="row">
-            <span align="right" style="font-weight: bold;">
-              Total Amount:
-            </span>&nbsp;&nbsp;
-            <span align="left" style="font-weight: bold;">
-              {{TotalCost()}}
-            </span>
-          </div>&nbsp;
-          <div class="row">
-            <span align="right" style="font-weight: bold;">
-              Total Discount:
-            </span>&nbsp;&nbsp;
-            <span align="left" style="font-weight: bold;">
-              {{ TotalDiscount() }}
-            </span>
-          </div>&nbsp;
-          <div class="row">
-            <span align="right" style="font-weight: bold;">
-              Net Amount:
-            </span>&nbsp;&nbsp;
-            <span align="left" style="font-weight: bold;">
-              {{ TotalAmount() }}
-            </span>
-          </div>
+      </div>
+      <div class="col-md-2">
+        <div class="row">
+          <span align="right" style="font-weight: bold;">
+            Total Amount:
+          </span>&nbsp;&nbsp;
+          <span align="left" style="font-weight: bold;">
+            {{TotalCost()}}
+          </span>
+        </div>&nbsp;
+        <div class="row">
+          <span align="right" style="font-weight: bold;">
+            Total Discount:
+          </span>&nbsp;&nbsp;
+          <span align="left" style="font-weight: bold;">
+            {{ TotalDiscount() }}
+          </span>
+        </div>&nbsp;
+        <div class="row">
+          <span align="right" style="font-weight: bold;">
+            Net Amount:
+          </span>&nbsp;&nbsp;
+          <span align="left" style="font-weight: bold;">
+            {{ TotalAmount() }}
+          </span>
         </div>
       </div>
     </div>
   </div>
+
   <div class="modal-footer">
-    <a  class="btn btn-secondary"  routerLink="/report-tab"  newtab>Viewer</a>
-    <button id="submitAdd" type="button" class="btn btn-success" (click)="c('Close click')" (click)="saveOrder(purchase_Order_ID,pO_Date,1,0,order_Envoy,0,0,supplier_ID,contact_ID,delivery_Date,Due_Date,method_Id,payment_ID,frieght_Id,TotalCost(),TotalDiscount(),0,0,freight_Chrgs,TotalAmount(),remarks,1,'New',paymentDate,0,0,0,'New123',0,0,1,1,0)">Save</button>
+      {{item_Code}}
+    <!-- <a class="btn btn-secondary" routerLink="/report-tab" newtab>Viewer</a>-->
+    <div *ngIf="mode; then submitAdd else submitUpdate"> </div>
+    <ng-template #submitAdd>
+      <button id="submitAdd" type="button" class="btn btn-success" (click)="c('Close click')" (click)="saveOrder(purchase_Order_ID,pO_Date,1,0,order_Envoy,0,0,supplier_ID,contact_ID,delivery_Date,Due_Date,method_Id,payment_ID,frieght_Id,TotalCost(),TotalDiscount(),0,0,freight_Chrgs,TotalAmount(),remarks,1,'New',paymentDate,0,0,0,'New123',0,0,1,1,0)">Save</button>
+    </ng-template>
+    <ng-template #submitUpdate>
+      <button id="submitUpdate" type="button" class="btn btn-success" (click)="c('Close click')" (click)="updateOrder(purchase_Order_ID,pO_Date,1,0,order_Envoy,0,0,supplier_ID,contact_ID,delivery_Date,Due_Date,method_Id,payment_ID,frieght_Id,TotalCost(),TotalDiscount(),0,0,freight_Chrgs,TotalAmount(),remarks,1,'New',paymentDate,0,0,0,'New123',0,0,1,1,0)">Save</button>
+    </ng-template>
     <button type="button" class="btn btn-danger" (click)="c('Close click')">Close</button>
   </div>
 </ng-template>

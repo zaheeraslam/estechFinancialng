@@ -12,51 +12,52 @@ import { HeaderService, LoginService } from '../../../shared';
 export class HeaderComponent implements OnInit, AfterViewInit {
     pushRightClass: string = 'push-right';
     //  my declerations
-    
-    logedInUserID: any = 1;
-    
-        header_Id: any;
-        header_Name: any;
-        page_URL: any;
-        sort_Order: any;
-        img_URL: any;
-        page_URL_New: any;
-    
-        sub_Header_ID: any;
-        sub_Header_Name: any;
-        moduleColor: any;
-    
-        page_Code: any;
-        page_Name: any;
-        showinMenue: any;
-        isList: any;
-        isSubList: any;
-        fileName: any;
-        DefaultModule = 6;
-        DefaultModuleName = "Supply Chain Management";
-        DefaultIMG_URL = "/assets/Scripts/img/ModuleIcons/proc.png";
-        DefaultModuleArray = [];
-        Headers: any[];
-        SubHeaders: any[];
-        userPriviligedFiles: any[];
-        reportURL: any;
-        detail: any;
-    
-    
-        header: any = 0;
-        subHeader: any = 0;
-        pageID: any = 0;
-        pageURL: any = "0";
-        criteriaSet: any = 0;
-        reportName: any = 0;
-        pageType: any = 0;
-        URL: any;
-        formURL: any;
-        AuthKey: any = "0";
-        displayName: any;
-        //end of my declarations
 
-    constructor(private translate: TranslateService, public router: Router, private service: HeaderService,  private loginService: LoginService) {
+    logedInUserID: any = 1;
+
+    header_Id: any;
+    header_Name: any;
+    page_URL: any;
+    sort_Order: any;
+    img_URL: any;
+    page_URL_New: any;
+
+    sub_Header_ID: any;
+    sub_Header_Name: any;
+    moduleColor: any;
+
+    page_Code: any;
+    page_Name: any;
+    showinMenue: any;
+    isList: any;
+    isSubList: any;
+    fileName: any;
+    DefaultModule = 6;
+    DefaultModuleName = "Supply Chain Management";
+    DefaultIMG_URL = "/assets/Scripts/img/ModuleIcons/proc.png";
+    DefaultModuleArray = [];
+    Headers: any[];
+    SubHeaders: any[];
+    userPriviligedFiles: any[];
+    reportURL: any;
+    detail: any;
+
+
+    header: any = 0;
+    subHeader: any = 0;
+    pageID: any = 0;
+    pageURL: any = "0";
+    criteriaSet: any = 0;
+    reportName: any = 0;
+    pageType: any = 0;
+    URL: any;
+    formURL: any;
+    AuthKey: any = "0";
+    displayName: any;
+    toggle: boolean = true;
+    //end of my declarations
+
+    constructor(private translate: TranslateService, public router: Router, private service: HeaderService, private loginService: LoginService) {
 
         this.translate.addLangs(['en', 'fr', 'ur', 'es', 'it', 'fa', 'de']);
         this.translate.setDefaultLang('en');
@@ -90,9 +91,17 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
 
     onLoggedout() {
-      
+
         localStorage.removeItem('isLoggedin');
         this.router.navigate(['/login']);
+    }
+    onToggle() {
+        if (this.toggle) {
+            this.router.navigate(['/charts']);
+        } else {
+            this.router.navigate(['/dashboard']);
+        }
+        this.toggle = !this.toggle;
     }
     onReports() {
         ;
@@ -102,7 +111,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     changeLang(language: string) {
         this.translate.use(language);
     }
-    
+
     // my code
     ngAfterViewInit() {
         this.displayName = sessionStorage.getItem("login");
@@ -157,9 +166,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         return newArr;
     }
     getPageDetail(page_ID) {
-       // this.onReports();
-     
-       // this.router.navigate(['/login']);
+        // this.onReports();
+
+        // this.router.navigate(['/login']);
         this.service.getPageDetail(page_ID)
             .subscribe(response => {
                 this.detail = (response.json());
@@ -180,24 +189,24 @@ export class HeaderComponent implements OnInit, AfterViewInit {
                 this.pageURL = this.detail[0].ngPage_URL;
                 this.pageType = this.detail[0].page_Type_ID;
                 sessionStorage.setItem('pageType', this.detail[0].page_Type_ID);
-                this.formURL = this.detail[0].url;                
+                this.formURL = this.detail[0].url;
                 sessionStorage.setItem('pageURL', this.detail[0].ngPage_URL);
                 this.reportURL = this.loginService.getSession('URL');
-               // alert(this.detail[0].URL);
+                // alert(this.detail[0].URL);
                 this.AuthKey = this.loginService.getSession('AuthKey');
                 //sessionStorage.setItem('rptURL', this.URL);
-             //   sessionStorage.setItem('rptURL', this.detail[0].url);
+                //   sessionStorage.setItem('rptURL', this.detail[0].url);
                 if (this.pageType == 1) {
-                    
-                    this.URL = "" + this.formURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";                  
+
+                    this.URL = "" + this.formURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";
                     sessionStorage.setItem('rptURL', this.URL);
                     this.router.navigate(['/purchase-order']);
                 }
                 else {
                     this.URL = "" + this.reportURL + "hid=" + this.header + "&shid=" + this.subHeader + "&PageId=" + this.pageID + "&CSet=" + this.criteriaSet + "&NameForReport=" + this.reportName + "&AuthKey=" + this.AuthKey + "";
-                   
+
                     this.router.navigate(['/reports'], { queryParams: { pageId: this.pageID, cset: this.criteriaSet, name: this.page_Name, authKey: this.AuthKey } });
                 }
-            }); 
+            });
     }
 }

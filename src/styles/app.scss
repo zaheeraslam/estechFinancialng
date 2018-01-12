@@ -9,7 +9,7 @@ body {
     margin: 0;    
     font-size: .8rem;
     font-weight: 200;
-    line-height: 1;
+    line-height: 1.5;
    
 }
 .form-control:not([size]):not([multiple]) {
@@ -32,7 +32,10 @@ select.form-control:not([size]):not([multiple]) {
     
 }
 .table th, .table td {
-    padding: 0.50rem;
+    padding: 0.5rem;
     
 }
-
+.table tr, .table td {
+    padding-top: 1.5px;
+    padding-bottom: 0px;
+}

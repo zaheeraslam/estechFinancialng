@@ -9,11 +9,12 @@ import {
     NotificationComponent,
     ChatComponent
 } from './components';
-import { StatModule } from '../../shared';
+import { StatModule, DirectiveModule } from '../../shared';
 
 @NgModule({
     imports: [
         CommonModule,
+        DirectiveModule,
         NgbCarouselModule.forRoot(),
         NgbAlertModule.forRoot(),
         DashboardRoutingModule,

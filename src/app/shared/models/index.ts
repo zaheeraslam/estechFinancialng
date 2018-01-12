@@ -19,3 +19,5 @@ export * from './SupplyChain/SRM/Invoice';
 export * from './SupplyChain/SRM/Payment';
 export * from './SupplyChain/SRM/PurchaseInvoiceDetail';
 export * from './SupplyChain/SRM/purchasePaymentDetails';
+export * from './SupplyChain/SRM/purchaseOrderDetails';
+export * from './SupplyChain/SRM/purchaseOrder';

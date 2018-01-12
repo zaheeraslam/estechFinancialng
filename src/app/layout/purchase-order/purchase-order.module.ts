@@ -10,6 +10,7 @@ import { Select2Module } from 'ng2-select2';
 import { SharedPipesModule, DirectiveModule } from '../../shared';
 import { MyDatePickerModule } from 'mydatepicker';
 
+
 @NgModule({
   imports: [
     CommonModule,

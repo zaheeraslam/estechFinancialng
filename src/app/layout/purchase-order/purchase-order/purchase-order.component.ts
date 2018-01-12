@@ -1,10 +1,10 @@
 import { Component, OnInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
-import { PurchaseOrderService, Supplier, LoginService, OrderDetailss, Order, OrderDetail } from '../../../shared';
+import { PurchaseOrderService, Supplier, LoginService, OrderDetailss, Order, OrderDetail, purchaseOrderDetails, purchaseOrder } from '../../../shared';
 import { UUID } from 'angular2-uuid';
 import * as $ from 'jquery';
 import { NgbModal, ModalDismissReasons, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { Select2OptionData } from 'ng2-select2';
-import {IMyDpOptions} from 'mydatepicker';
+import { IMyDpOptions, IMyDateModel } from 'mydatepicker';
 @Component({
   selector: 'app-purchase-order',
   host: { '(window:keydown)': 'hotkeys($event)' },
@@ -20,34 +20,31 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     dateFormat: 'dd/mm/yyyy',
     inline: false,
     height: '25px'
-};
-  model: any;
-  //  public exampleData: Array<Select2OptionData>;
-  public supp: any;
-  //modal poperty
-  closeResult: string;
+  };
+
   //Member Variables
+
+  public supp: any;
+  closeResult: string;
   order: any;
   status: any;
   orders: any[];
-   users: any;
-
+  users: any;
   suppliers: Array<Select2OptionData>;
   contacts: any[];
-  items: any[];
+  items: Array<Select2OptionData>;
   unitPrices: any[];
   payments: any[];
   supplier: Supplier[];
-  OrderDetails: any;
+  purchaseOrderDetails: any[];
+  purchaseOrderDetail: any;
   selectedItem: Object = {};
   newselectedItem: Object = {};
   selectedSupplier: Supplier = new Supplier(0, 0, '');
   editMode = false;
   index = 1;
-  date = new Date();
-  pO_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
   order_Envoy: any = 1;
-  supplier_ID: any;
+  public supplier_ID: any;
   supplier_IDID: any;
   SupplierID: any = 0;
   purchase_Order_ID = 0;
@@ -55,19 +52,18 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
   PO_NO: any;
   Supplier_ID: any = 1;
   contact_Person_ID: any;
-  contact_ID: any;
-  delivery_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
-  Shipping_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
+  public contact_ID: any;
   shipping_Method: any;
   payment_ID: any;
   freight_Term: any;
-  total_Cost: any;
-  total_Discount: any;
-  freight_Chrgs: any = 0.00;
-  total_Amount: any;
+  total_Cost: any = 0;
+  total_Discount: any = 0;
+  freight_Chrgs: any = 1;
+  total_Amount: any = 0;
   remarks: any;
-  paymentDate: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
-  item_Code: any;
+  selectSupplier: any[];
+  public item_Code: any;
+  public item_Name: any;
   IsUpdate: any;
   Quantity: any = 0;
   Discount_Rate: any = 0;
@@ -86,25 +82,34 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     singleSelection: 'true',
     enableSearchFilter: true
   };
-  //End Member Variables
 
+  date = new Date();
+  pO_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
+  delivery_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
+  Shipping_Date: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
+  paymentDate: any = this.date.getFullYear() + '-' + ('0' + (this.date.getMonth() + 1)).slice(-2) + '-' + ('0' + this.date.getDate()).slice(-2);
+  //End Member Variables
+  alerts: Array<any> = [];
   constructor(private service: PurchaseOrderService,
     private LoginService: LoginService,
     private ngbDateParserFormatter: NgbDateParserFormatter,
     private modalService: NgbModal) {
-    this.OrderDetails = new Array<OrderDetailss>();
+    this.purchaseOrderDetails = new Array<purchaseOrderDetails>();
+    this.alerts.push(
+      {
+        id: 4,
+        type: 'danger',
+        message: 'Record is not updatable since it is being used...',
+      });
   }
   //ngOnInit
   ngOnInit() {
     this.orderDetails();
-    this.getPriviledgedOffices();
-    this.getSuppliers();
-    // this.gets();
-    this.getItems();
-    this.getPayments();
-    this.scrollToBottom();
-    this.frieghtChange();
-
+    //this.getPriviledgedOffices();
+    //this.scrollToBottom();
+    //this.getSuppliers();
+    //this.getItems();
+    //this.getPayments();
   }
   //orderDetails 
   orderDetails() {
@@ -130,13 +135,222 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         this.status = (response.json());
         if (this.status == true) {
           $("#alertWarning").show();
-          $("#submitAdd").prop("disabled", true);
+          $("#submitUpdate").prop("disabled", true);
         }
         else {
           $("#alertWarning").hide();
-          $("#submitAdd").prop("disabled", false);
+          $("#submitUpdate").prop("disabled", false);
         }
       });
+  }
+  //getPriviledgedOffices
+  getPriviledgedOffices() {
+    this.service.getPriviledgedOffices()
+      .subscribe(response => {
+        this.users = (response.json());
+        this.order_Envoy = this.users[0].order_Envoy;
+        // console.log(this.users);
+      });
+  }
+  //clearFields
+  clearFields() {
+
+    this.order_Envoy = 1;
+    this.supplier_ID = 1;
+    this.SupplierID = 0;
+    this.purchase_Order_ID = 0;
+    this.Office_Code = 0;
+    this.PO_NO = 0;
+    this.Supplier_ID = 1;
+    this.contact_Person_ID = 0;
+    this.payment_ID = 1;
+    this.method_Id = 1;
+    this.frieght_Id = 1;
+    this.total_Cost = 0;
+    this.total_Discount = 0;
+    this.freight_Chrgs = 1;
+    this.total_Amount = 0;
+    this.remarks = "";
+    this.item_Code = 0;
+    this.Quantity = 1;
+    this.Discount_Rate = 0;
+    this.purchaseOrderDetails = [];
+    /*this.users = [];
+    this.suppliers = [];
+    this.contacts = [];
+    this.items = [];
+    this.payments = [];
+    this.supplier = [];*/
+    this.guid = UUID.UUID();
+    $("#alertWarning").hide();
+    $("#submitAdd").prop("disabled", false);
+
+
+    this.getItems();
+    this.getPayments();
+    this.frieghtChange();
+    this.scrollToBottom();
+    this.getPriviledgedOffices();
+    this.mode = true;
+    $("#alertWarning").hide();
+    $("#alertWarning").prop("disabled", true);
+
+  }
+  //getSuppliers
+  getSuppliers() {
+    this.service.getSuppliers()
+      .subscribe(response => {
+        this.suppliers = this.getDropdownList(response.json(), "supplier_ID", "supplier_Name");
+        this.supplier_ID.push({
+          id: this.suppliers[0].id,
+          text: this.suppliers[0].text
+        });
+        //getContacts
+        this.service.getContacts(this.supplier_ID)
+          .subscribe(response => {
+            this.contacts = response.json();
+            this.contact_ID = this.contacts[0].contact_ID;
+            //  console.log(response.json());
+          });
+      });
+  }
+  //changeSupplier
+  changeSupplier(e: any) {
+    this.supplier_ID = e.value;
+    this.service.getContacts(this.supplier_ID)
+      .subscribe(response => {
+        this.contacts = response.json();
+        this.contact_ID = this.contacts[0].contact_ID;
+        console.log(response.json());
+      });
+  }
+  //getItems  
+  getItems() {
+    this.service.getItems()
+      .subscribe(response => {
+        this.items = this.getDropdownList(response.json(), "item_Code", "item_Name");
+        this.item_Code = this.items[2].id;
+        this.item_Name = this.items[2].text;
+        //getUnitPrice
+        this.service.getUnitPrice(this.item_Code)
+          .subscribe(response => {
+            this.unitPrices = (response.json());
+            this.unit_Price = this.unitPrices[0].unit_Price;
+            //console.log(response.json());
+          });
+      });
+  }
+  //changeItem
+  changeItem(e: any) {
+    this.item_Code = e.value;
+    this.service.getUnitPrice(this.item_Code)
+      .subscribe(response => {
+        this.unitPrices = (response.json());
+        this.unit_Price = this.unitPrices[0].unit_Price;
+        this.item_Name = this.unitPrices[0].item_Name;
+        //  console.log(response.json());
+      });
+  }
+  //getPayments
+  getPayments() {
+    this.service.getPayments()
+      .subscribe(response => {
+        this.payments = (response.json());
+        // console.log(response.json());
+      });
+  }
+  //showCreate
+  showCreate() {
+    this.mode = false;
+    this.clearFields();
+    $("#pnlAdd").show();
+    $("#pnlDetail").hide();
+    $("#submitAdd").show();
+    $("#submitUpdate").hide();
+  }
+  //hideGrid
+  hideGrid() {
+    // this.ngOnInit();
+    this.mode = true;
+    $("#pnlAdd").hide();;
+    $("#pnlDetail").show();
+    $("#submitAdd").hide();
+    $("#submitUpdate").show();
+    $("#submitAdd").prop("disabled", false);
+  }
+  //editMode
+  edit() {
+    this.mode = true;
+    $("#pnlAdd").show();
+    $("#pnlDetail").hide();
+    $("#submitAdd").hide();
+    $("#submitUpdate").show();
+    $("#submitAdd").prop("disabled", false);
+  }
+  //Total Cost
+  TotalCost() {
+    var total_Cost = 0;
+    if (this.purchaseOrderDetails.length > 0) {
+      for (var count = 0; count < this.purchaseOrderDetails.length; count++) {
+        total_Cost += this.purchaseOrderDetails[count].unit_Price * this.purchaseOrderDetails[count].quantity;
+      }
+    }
+
+    return total_Cost.toFixed(2);;
+  }
+  //Total Discount
+  TotalDiscount() {
+    var total_Discount = 0;
+    if (this.purchaseOrderDetails.length > 0) {
+      for (var count = 0; count < this.purchaseOrderDetails.length; count++) {
+        total_Discount += ((this.purchaseOrderDetails[count].unit_Price * this.purchaseOrderDetails[count].quantity) * this.purchaseOrderDetails[count].discount_Rate / 100);
+      }
+    }
+    return total_Discount.toFixed(2);;
+  }
+  //Total Amount
+  TotalAmount() {
+    var total_Amount = 0;
+    if (this.purchaseOrderDetails.length > 0) {
+      for (var count = 0; count < this.purchaseOrderDetails.length; count++) {
+        total_Amount += ((this.purchaseOrderDetails[count].unit_Price * this.purchaseOrderDetails[count].quantity) - ((this.purchaseOrderDetails[count].unit_Price * this.purchaseOrderDetails[count].quantity) * this.purchaseOrderDetails[count].discount_Rate / 100));
+      }
+      if (this.freight_Chrgs != "")
+
+        total_Amount += parseFloat(this.freight_Chrgs);
+
+    }
+    return total_Amount.toFixed(2);
+  }
+  //changeQuantity
+  changeQuantity(Quantity) {
+    if (Quantity <= 0) {
+      this.Quantity = 1;
+    }
+  }
+  //changeQuantity
+  changeQuantityEdit(i: purchaseOrderDetails, quantity) {
+    if (quantity <= 0) {
+      i.quantity = 1;
+    }
+  }
+  //changeDiscountRate
+  changeDiscountRate(Discount_Rate) {
+    if (Discount_Rate > 100) {
+      this.Discount_Rate = 100;
+    }
+    else if (Discount_Rate <= 0) {
+      this.Discount_Rate = 0;
+    }
+  }
+  //changeDiscountRateEdit
+  changeDiscountRateEdit(i: purchaseOrderDetails, discount_Rate) {
+    if (discount_Rate > 100) {
+      i.discount_Rate = 100;
+    }
+    else if (discount_Rate <= 0) {
+      i.discount_Rate = 0;
+    }
   }
   // convert dropdown lables
   getDropdownList(arr: any[], valuetxt: any, displaytxt: any): any {
@@ -154,187 +368,22 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     }
     return ar;
   }
-  //getPriviledgedOffices
-  getPriviledgedOffices() {
-    this.service.getPriviledgedOffices()
-      .subscribe(response => {
-        this.users = response.json();
-        this.order_Envoy = this.users[0].order_Envoy;
-      });
-  }
-  //getSuppliers
-  getSuppliers() {
-    this.service.getSuppliers()
-      .subscribe(response => {
-        this.suppliers = this.getDropdownList(response.json(), "supplier_ID", "supplier_Name");
-        this.supplier_ID = this.suppliers[0].id;
-        this.changeSupplier(this.supplier_ID);
-        //   console.log(response.json());
-      });
-  }
-  //gets
-  gets() {
-    this.service.getSupp()
-      .subscribe(response => {
-        // this.supp = (response.json());
-        //  this.supplier_IDID = this.supp[0].id
-        //  this.changeSupp(this.supplier_IDID);
-        //   console.log(response.json());
-        console.log(response.json());
-      });
-  }
-  //getItems  
-  getItems() {
-    this.service.getItems()
-      .subscribe(response => {
-        this.items = this.getDropdownList(response.json(),"item_Code","item_Name");
-        // this.ite = this.items;
-        // this.item_Code = this.items[0].item_Code;
-        //alert(this.item_Code);
-        //this.changeItem(this.item_Code);
-        //  console.log(response.json());
-      });
-  }
-  //getPayments
-  getPayments() {
-    this.service.getPayments()
-      .subscribe(response => {
-        this.payments = (response.json());
-        // console.log(response.json());
-      });
-  }
-  //showCreate
-  showCreate() {
-    this.mode = false;
-    $("#pnlAdd").show();
-    $("#pnlDetail").hide();
-    this.ClearFields();
-  }
-  //hideGrid
-  hideGrid() {
-    // this.ngOnInit();
-    this.mode = true;
-    $("#pnlAdd").hide();
-    $("#pnlDetail").show();
-    $("#submitAdd").prop("disabled", false);
-
-  }
-  //editMode
-  edit() {
-    this.mode = true;
-    $("#pnlAdd").show();
-    $("#pnlDetail").hide();
-    $("#submitAdd").prop("disabled", false);
-  }
-  //ClearFields
-  ClearFields() {
-
-    this.order_Envoy = 1;
-    this.supplier_ID = 1;
-    this.SupplierID = 0;
-    this.purchase_Order_ID = 0;
-    this.Office_Code = 0;
-    this.PO_NO = 0;
-    this.Supplier_ID = 1;
-    this.contact_Person_ID = 0;
-    this.payment_ID = 1;
-    this.method_Id = 1;
-    this.frieght_Id = 1;
-    this.total_Cost = 0;
-    this.total_Discount = 0;
-    this.freight_Chrgs = 0.00;
-    this.total_Amount = 0;
-    this.remarks = "";
-    this.item_Code = 0;
-    this.Quantity = 0;
-    this.Discount_Rate = 0;
-    this.OrderDetails = [];
-    /*this.users = [];
-    this.suppliers = [];
-    this.contacts = [];
-    this.items = [];
-    this.payments = [];
-    this.supplier = [];*/
-    this.guid = UUID.UUID();
-    $("#alertWarning").hide();
-    $("#submitAdd").prop("disabled", false);
-
-
-  }
-  //Total Cost
-  TotalCost() {
-    var total_Cost = 0;
-    if (this.OrderDetails.length > 0) {
-      for (var count = 0; count < this.OrderDetails.length; count++) {
-        total_Cost += this.OrderDetails[count].unit_Price * this.OrderDetails[count].quantity;
-      }
-    }
-
-    return total_Cost.toFixed(2);;
-  }
-  //Total Discount
-  TotalDiscount() {
-    var total_Discount = 0;
-    if (this.OrderDetails.length > 0) {
-      for (var count = 0; count < this.OrderDetails.length; count++) {
-        total_Discount += ((this.OrderDetails[count].unit_Price * this.OrderDetails[count].quantity) * this.OrderDetails[count].discount_Rate / 100);
-      }
-    }
-    return total_Discount.toFixed(2);;
-  }
-  //Total Amount
-  TotalAmount() {
-    var total_Amount = 0;
-    if (this.OrderDetails.length > 0) {
-      for (var count = 0; count < this.OrderDetails.length; count++) {
-        total_Amount += ((this.OrderDetails[count].unit_Price * this.OrderDetails[count].quantity) - ((this.OrderDetails[count].unit_Price * this.OrderDetails[count].quantity) * this.OrderDetails[count].discount_Rate / 100));
-      }
-      if (this.freight_Chrgs != "")
-
-        total_Amount += parseFloat(this.freight_Chrgs);
-
-    }
-    return total_Amount.toFixed(2);
-  }
-  //changeSupplier
-  changeSupplier(e: any) {
-    this.service.getContacts(e.value)
-      .subscribe(response => {
-        this.contacts = response.json();
-        this.contact_ID = this.contacts[0].contact_ID;
-        //  console.log(response.json());
-      });
-  }
-  //changeSupp
-  changeSupp(supplier_IDID) {
-    this.service.getContacts(supplier_IDID)
-      .subscribe(response => {
-        this.contacts = (response.json());
-        this.contact_ID = this.contacts[0].contact_ID;
-        //  console.log(response.json());
-      });
-  }
-  //changeSupplier
-  changeItem(item_Code) {
-    //  alert(item_Code);
-    /*this.service.getUnitPrice(item_Code)
-      .subscribe(response => {
-        this.unitPrices = (response.json());
-        this.unit_Price = this.unitPrices[0].unit_Price;
-        //  console.log(response.json());
-      });*/
-  }
   //frieghtChange
   frieghtChange = function () {
     var PaymentTerm = this.frieght_Id;
-
     if (PaymentTerm == 1) {
-      document.getElementById("freightlbl").style.display = "none";
-      document.getElementById("freighttxt").style.display = "none";
+      $("#freightlbl").hide();
+      $("#freighttxt").hide();
+      //document.getElementById("freightlbl").style.display = "none";
+      //document.getElementById("freighttxt").style.display = "none";
+      this.freight_Chrgs = 0;
     }
     else {
-      document.getElementById("freightlbl").style.display = "block";
-      document.getElementById("freighttxt").style.display = "block";
+      $("#freightlbl").show();
+      $("#freighttxt").show();
+      //document.getElementById("freightlbl").style.display = "block";
+      //document.getElementById("freighttxt").style.display = "block";
+      this.freight_Chrgs = 1;
     }
 
   }
@@ -404,28 +453,36 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
       this.paymentDate = "";
     }
   }
+  //changeFreight
+  changeFreight(freight_Chrgs) {
+    if (freight_Chrgs <= 0)
+      this.freight_Chrgs = 1;
+  }
   //ShipMethodList
   ShipMethodList = [
     { "method_Id": 1, "method_Name": "Airborne" }
     , { "method_Id": 2, "method_Name": "DHL" }
     , { "method_Id": 3, "method_Name": "UPS" }
     , { "method_Id": 4, "method_Name": "Postal Mail" }
-    , { "method_Id": 5, "method_Name": "Other" }];
+    , { "method_Id": 5, "method_Name": "Other" }]
   //FrieghtTermsList
   FrieghtTermsList = [
     { "frieght_Id": 1, "frieght_Name": "No Charge" }
     , { "frieght_Id": 2, "frieght_Name": "FOB" }
-  ];
+  ]
   //getDetailsByID
-  getDetailsByID(purchase_Order_ID) {
-    this.edit();
+  getDetailsByID(purchase_Order_ID, content) {
+    this.open(content);
+    //this.edit();
+    this.mode = false;
     this.IfExists(purchase_Order_ID);
     this.service.getDetailsByID(purchase_Order_ID)
-      .subscribe((o: Order) => {
+      .subscribe((o: purchaseOrder) => {
         this.purchase_Order_ID = o.purchase_Order_ID;
         this.pO_Date = o.pO_Date;
         this.order_Envoy = o.order_Envoy;
-        this.supplier_ID = o.supplier_ID
+        this.getSuppliers();
+        this.supplier_ID = o.supplier_ID;
         this.contact_Person_ID = o.contact_Person_ID;
         this.changeSupplier(o.supplier_ID);
         this.payment_ID = o.payment_ID;
@@ -437,8 +494,9 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         this.freight_Chrgs = o.freight_Chrgs;
         this.total_Amount = o.total_Amount;
         this.total_Discount = o.total_Discount;
-        this.OrderDetails = o.orderDetailss;
-        this.changeMode(0, this.OrderDetails, true)
+        this.purchaseOrderDetails = o.purchaseOrderDetails;
+        this.changeSupplier(this.supplier_ID);
+        this.changeMode(0, this.purchaseOrderDetail, true)
       });
   }
   //IfExists
@@ -449,72 +507,78 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
       });
   }
   //addGrid
-  addGrid(item_Code: any, Item_Name: any, Unit_Price: any, Quantity: any, Discount_Rate: any) {
-
-    if (Item_Name != null) {
-      if (Quantity > 0) {
-        var flag = false;
-        if (this.OrderDetails.length > 0) {
-          for (var count = 0; count < this.OrderDetails.length; count++) {
-            if (this.OrderDetails[count].item_Code == item_Code) {
-              flag = true;
-              break;
+  addGrid(item_Code: any, item_Name: any, Unit_Price: any, Quantity: any, Discount_Rate: any) {
+    if (Unit_Price != 0) {
+      if (item_Name != null) {
+        if (Quantity > 0) {
+          var flag = false;
+          if (this.purchaseOrderDetails.length > 0) {
+            for (var count = 0; count < this.purchaseOrderDetails.length; count++) {
+              if (this.purchaseOrderDetails[count].item_Code == item_Code) {
+                flag = true;
+                break;
+              }
             }
           }
+          if (flag == false) {
+            this.purchaseOrderDetails.push(new purchaseOrderDetails(0, 0, item_Code, item_Name, Unit_Price, Quantity, (Unit_Price * Quantity), Discount_Rate, ((Quantity) * (Unit_Price) * (Discount_Rate) / 100), ((Quantity) * (Unit_Price) - ((Quantity) * (Unit_Price) * (Discount_Rate) / 100)), 0));
+            this.editMode = false;
+          } else {
+            alert("Already Exists");
+          }
         }
-        if (flag == false) {
-          this.OrderDetails.push(new OrderDetail(0, 0, item_Code, Item_Name, Unit_Price, Quantity, (Unit_Price * Quantity), Discount_Rate, ((Quantity) * (Unit_Price) * (Discount_Rate) / 100), ((Quantity) * (Unit_Price) - ((Quantity) * (Unit_Price) * (Discount_Rate) / 100)), 0));
-          this.editMode = false;
-        } else {
-          alert("Already Exists");
+        else {
+          alert("- Qty is required.Qty not be zero and should be numeric.");
         }
-      }
-      else {
-        alert("- Qty is required.Qty not be zero and should be numeric.");
+      } else {
+        alert("Item is Required.");
       }
     } else {
-      alert("Item is Required.");
+      alert("unit price should be greater then 0.");
     }
-    $("#item_ID").focus();
+    $("#txt").focus();
     this.scrollToBottom();
 
   }
   //changeMode
-  changeMode(idx: any, i: OrderDetail, Mode: any) {
-
+  changeMode(idx: any, i: purchaseOrderDetails, Mode: any) {
     var flag = false;
-    if (this.OrderDetails.length > 0) {
-      for (var count = 0; count < this.OrderDetails.length; count++) {
-        if (this.OrderDetails[count].item_Code == i.item_Code && idx != count) {
+    if (this.purchaseOrderDetails.length > 0) {
+      for (var count = 0; count < this.purchaseOrderDetails.length; count++) {
+        if (this.purchaseOrderDetails[count].item_Code == i.item_Code && idx != count) {
           flag = true;
           break;
         }
       }
     }
-
     if (Mode == 0) {
-      if (flag == false) {
-        //  console.log(i);
-        if (i.quantity > 0) {
-          i.edit_Mode = false;
-          i.purchase_Cost = (i.unit_Price * i.quantity);
-          i.discount_Amount = ((i.quantity) * (i.unit_Price) * (i.discount_Rate) / 100);
-          i.net_Amount = ((i.quantity) * (i.unit_Price) - ((i.quantity) * (i.unit_Price) * (i.discount_Rate) / 100));
+      if (i.unit_Price != 0) {
+        if (flag == false) {
+          if (i.quantity > 0) {
+            i.edit_Mode = false;
+            i.purchase_Cost = (i.unit_Price * i.quantity);
+            i.discount_Amount = ((i.quantity) * (i.unit_Price) * (i.discount_Rate) / 100);
+            i.net_Amount = ((i.quantity) * (i.unit_Price) - ((i.quantity) * (i.unit_Price) * (i.discount_Rate) / 100));
+          } else {
+            alert("Quantity should be greater then 0");
+          }
         } else {
-          alert("Quantity should be greater then 0");
+          alert("Already Exists");
         }
       } else {
-        alert("Already Exists");
+        alert("unit price should be greater then 0.");
       }
+    }
+    else if (Mode == 2) {
+      this.purchaseOrderDetails.splice(idx, 1);
     }
     else {
       console.log(i);
       i.edit_Mode = true;
     }
-
   }
   //updateItem  
-  updateItem(i: OrderDetailss, item_Code: any, item_Name: any, unit_Price: any) {
+  updateItem(i: purchaseOrderDetails, item_Code: any, item_Name: any, unit_Price: any) {
     i.item_Code = item_Code;
     i.item_Name = item_Name;
     i.unit_Price = unit_Price;
@@ -529,39 +593,76 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     Total_Amount: any, remarks: any, Reorder_ID: any, Order_Type: any, paymentDate: any,
     Voucher_ID: any, Pay_Voucher_ID: any, Cancel: any, mode: any, POGUID: any, Customer_ID: any,
     C_Contact_Person_ID: any, Requisition_ID: any, Day_Id: any, IsServiceInvoice: any) {
-    alert("pressed");
 
-    //if (!this.guidExist('87cd31e4-9b25-0e73-70a5-f308504d0f5b')) {     
-    if (Total_Amount > 0) {
-      var order = new Order(purchase_Order_ID,
-        PO_Date, Office_Code, PO_NO, order_Envoy,
-        1, 1, supplier_ID,
-        contact_Person_ID, delivery_Date, Shipping_Date,
-        method_Id, payment_ID, frieght_Id,
-        Total_Cost, Total_Discount, Pre_Tax_Amount,
-        Total_Tax, freight_Chrgs, Total_Amount,
-        remarks, Reorder_ID, Order_Type, paymentDate, 0, 0, false, this.mode,
-        this.guid, null, null, 1, 0,
-        false, this.OrderDetails);
-      //let ngbDate = order.pO_Date;
-      //let myDate = this.ngbDateParserFormatter.format(ngbDate);
-      if (this.mode != 0) {
-        this.OrderDetails[0].edit_Mode = true;
+    if (!this.guidExist(this.guid)) {
+      if (Total_Amount > 0) {
+        var order = new purchaseOrder(purchase_Order_ID,
+          PO_Date, Office_Code, PO_NO, order_Envoy,
+          1, 1, supplier_ID,
+          contact_Person_ID, delivery_Date, Shipping_Date,
+          method_Id, payment_ID, frieght_Id,
+          Total_Cost, Total_Discount, Pre_Tax_Amount,
+          Total_Tax, freight_Chrgs, Total_Amount,
+          remarks, Reorder_ID, Order_Type, paymentDate, 0, 0, false, this.mode,
+          this.guid, null, null, 1, 0,
+          false, this.purchaseOrderDetails);
+
+        if (this.mode != 0) {
+          this.purchaseOrderDetails[0].edit_Mode = true;
+        }
+        this.service.saveOrder(order).then(
+          (response) => {
+            this.orderDetails();
+            console.log(response);
+          },
+          (error) => console.log(error))
+        this.hideGrid();
       }
-      this.service.saveOrder(order).then(
-        (response) => {
-          this.orderDetails();
-          console.log(response);
-        },
-        (error) => console.log(error))
-      this.hideGrid();
+      else {
+        alert("- Order should be greater then 0.");
+      }
     }
-    else {
-      alert("- Order should be greater then 0.");
+    else { alert("- Error: Already exists."); }
+  }
+  //updateOrder
+  updateOrder(purchase_Order_ID: any, PO_Date: any, Office_Code: any, PO_NO: any,
+    order_Envoy: any, Approved_By_ID: any, isApproved: any, supplier_ID: any,
+    contact_Person_ID: any, delivery_Date: any, Shipping_Date: any,
+    method_Id: any, payment_ID: any, frieght_Id: any, Total_Cost: any,
+    Total_Discount: any, Pre_Tax_Amount: any, Total_Tax: any, freight_Chrgs: any,
+    Total_Amount: any, remarks: any, Reorder_ID: any, Order_Type: any, paymentDate: any,
+    Voucher_ID: any, Pay_Voucher_ID: any, Cancel: any, mode: any, POGUID: any, Customer_ID: any,
+    C_Contact_Person_ID: any, Requisition_ID: any, Day_Id: any, IsServiceInvoice: any) {
+
+    if (!this.guidExist(this.guid)) {
+      if (Total_Amount > 0) {
+        var order = new purchaseOrder(purchase_Order_ID,
+          PO_Date, Office_Code, PO_NO, order_Envoy,
+          1, 1, supplier_ID,
+          contact_Person_ID, delivery_Date, Shipping_Date,
+          method_Id, payment_ID, frieght_Id,
+          Total_Cost, Total_Discount, Pre_Tax_Amount,
+          Total_Tax, freight_Chrgs, Total_Amount,
+          remarks, Reorder_ID, Order_Type, paymentDate, 0, 0, false, this.mode,
+          this.guid, null, null, 1, 0,
+          false, this.purchaseOrderDetails);
+
+        if (this.mode != 0) {
+          this.purchaseOrderDetails[0].edit_Mode = true;
+        }
+        this.service.updateOrder(order).then(
+          (response) => {
+            this.orderDetails();
+            console.log(response);
+          },
+          (error) => console.log(error))
+        this.hideGrid();
+      }
+      else {
+        alert("- Order should be greater then 0.");
+      }
     }
-    //}
-    //else
-    //{ alert("- Error: Already exists."); }
+    else { alert("- Error: Already exists."); }
   }
   //ngAfterViewChecked
   ngAfterViewChecked() {
@@ -581,15 +682,18 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     //    this.showCreate();
     // }
   }
-  // for modal
+  // open modal
   open(content) {
+
     this.modalService.open(content).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
-  }
 
+    this.clearFields();
+  }
+  //getDismissReason
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -600,4 +704,8 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     }
   }// end of modal
 }
+
+
+
+
 
