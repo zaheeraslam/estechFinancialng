@@ -1,10 +1,10 @@
 import { Component, OnInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
-import { PurchaseOrderService, Supplier, LoginService, OrderDetailss, Order, OrderDetail, purchaseOrderDetails, purchaseOrder } from '../../../shared';
+import { PurchaseOrderService, Supplier, LoginService, OrderDetailss, Order, OrderDetail, purchaseOrderDetails, purchaseOrder, UtilityDate } from '../../../shared';
 import { UUID } from 'angular2-uuid';
 import * as $ from 'jquery';
 import { NgbModal, ModalDismissReasons, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { Select2OptionData } from 'ng2-select2';
-import { IMyDpOptions, IMyDateModel } from 'mydatepicker';
+import { IMyDpOptions, IMyDateModel, IMyDate } from 'mydatepicker';
 @Component({
   selector: 'app-purchase-order',
   host: { '(window:keydown)': 'hotkeys($event)' },
@@ -19,9 +19,17 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     // other options...
     dateFormat: 'dd/mm/yyyy',
     inline: false,
+    showClearDateBtn:false,
+    showInputField:false,
     height: '25px'
+    
+  
   };
-
+  public model: IMyDate;// = { date: { year: 2018, month: 10, day: 9 } };
+  test:IMyDateModel  = {formatted:"09/10/2018",date: {year: 2018, month: 10, day: 9},epoc:1539025200,jsdate:new Date("2018-10-09")};
+ 
+  private selDate: {};
+  
   //Member Variables
 
   public supp: any;
@@ -102,8 +110,12 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         message: 'Record is not updatable since it is being used...',
       });
   }
+ 
   //ngOnInit
   ngOnInit() {
+  
+   // let xx=UtilityDate.get(this.model);
+   // console.log(xx);
     this.orderDetails();
     //this.getPriviledgedOffices();
     //this.scrollToBottom();
@@ -111,6 +123,8 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     //this.getItems();
     //this.getPayments();
   }
+
+  
   //orderDetails 
   orderDetails() {
     this.isLoading = true;
@@ -152,9 +166,11 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         // console.log(this.users);
       });
   }
+  
   //clearFields
   clearFields() {
-
+    
+ this.selDate =  UtilityDate.set(); 
     this.order_Envoy = 1;
     this.supplier_ID = 1;
     this.SupplierID = 0;
@@ -470,6 +486,13 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
     { "frieght_Id": 1, "frieght_Name": "No Charge" }
     , { "frieght_Id": 2, "frieght_Name": "FOB" }
   ]
+
+  onDateChanged(event: IMyDateModel) {
+    // Update value of selDate variable
+    this.pO_Date=event.formatted;
+    console.log(event.formatted);
+
+}
   //getDetailsByID
   getDetailsByID(purchase_Order_ID, content) {
     this.open(content);
@@ -480,6 +503,15 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
       .subscribe((o: purchaseOrder) => {
         this.purchase_Order_ID = o.purchase_Order_ID;
         this.pO_Date = o.pO_Date;
+        
+        let d=UtilityDate.set(this.pO_Date.replace("-","/").replace("-","/")); 
+        console.log(d);
+        this.selDate =  d;
+  
+        let element: HTMLElement = document.getElementsByClassName('btnpicker')[0] as HTMLElement;
+        element.click();
+        element.click();
+
         this.order_Envoy = o.order_Envoy;
         this.getSuppliers();
         this.supplier_ID = o.supplier_ID;
@@ -499,6 +531,8 @@ export class PurchaseOrderComponent implements OnInit, AfterViewChecked {
         this.changeMode(0, this.purchaseOrderDetail, true)
       });
   }
+
+ 
   //IfExists
   guidExist(guid: any) {
     this.service.guidExist(guid)

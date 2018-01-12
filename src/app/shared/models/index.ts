@@ -8,6 +8,7 @@ export * from './others/OrderDetail';
 export * from './others/OrderDetailss';
 export * from './others/Supplier';
 export * from './others/User';
+export * from './others/UtilityDate';
 export * from './SupplyChain/CRM/customer';
 export * from './SupplyChain/CRM/customerPaymentDetails';
 export * from './SupplyChain/CRM/saleInvoice';
@@ -21,3 +22,4 @@ export * from './SupplyChain/SRM/PurchaseInvoiceDetail';
 export * from './SupplyChain/SRM/purchasePaymentDetails';
 export * from './SupplyChain/SRM/purchaseOrderDetails';
 export * from './SupplyChain/SRM/purchaseOrder';
+

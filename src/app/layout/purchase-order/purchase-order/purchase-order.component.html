@@ -24,7 +24,7 @@
           <td>{{dt.purchase_Order_ID}}</td>
           <td>{{dt.pO_NO}}</td>
           <td>{{dt.supplier_Name}}</td>
-          <td>{{dt.pO_Date | date:"dd/MM/yy"}} </td>
+          <td>{{dt.pO_Date | date:"dd/MM/yyyy"}} </td>
           <td>{{dt.total_Cost}}</td>
           <td>{{dt.total_Discount}}</td>
           <td>{{dt.total_Amount}}</td>
@@ -64,9 +64,9 @@
         <span>Date:</span>
       </div>
       <div class="col-md-2">
-        <!--<input type="date" class="form-control" [(ngModel)]="pO_Date" id="pO_Date" placeholder="dd-mm-yyyy">-->
-        <my-date-picker name="odpkr" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event)" [(ngModel)]="model" required></my-date-picker>
-        {{pO_Date}}
+        <input type="text" class="form-control" [(ngModel)]="pO_Date" id="pO_Date" placeholder="dd-mm-yyyy">
+        <my-date-picker name="odpkr" [options]="myDatePickerOptions"  [(ngModel)]="selDate" (dateChanged)="onDateChanged($event)" ></my-date-picker>
+  
       </div>
       <div class="col-md-2">
         <span>Due Date:</span>
